@@ -13,7 +13,7 @@ intest.insert(0, 'Season')
 intest.insert(1, 'Daily range')
 seasons = {0: 'winter', 1: 'spring', 2: 'summer', 3: 'autumn'}
 daily_ranges = {0: 'night', 1: 'morning', 2: 'afternoon', 3: 'evening'}
-for i in range(0,n):
+for i in range(0,len(ds)):
         date = ds[i]['Dates']
         splitted_date = date.split(' ')
         day,time = splitted_date[0].strip(), splitted_date[1].strip()
@@ -27,4 +27,23 @@ for i in range(0,n):
         ds[i]['Daily range'] = daily_range
         del(ds[i]['Dates'])
         new_ds.append(ds[i])
-dsToCSV('./Dataset/train_new.csv',new_ds,intest)
+        
+i = 0	
+for el in intest:
+	if(el == "X"):
+		del(intest[i])
+	i = i + 1
+	
+i = 0	
+for el in intest:
+	if(el == "Y"):
+		del(intest[i])
+	i = i + 1
+	
+#i = 0	
+#for el in intest:
+#	if(el == "PdDistrict"):
+#		del(intest[i])
+#	i = i + 1
+        
+dsToCSV('./Dataset/trainSDR.csv',new_ds,intest)
