@@ -1,3 +1,8 @@
 Modifiche iniziali:
--eliminazione colonna "Id" dal test set
--spostamento delle colonne "Category", "Descript" e "Resolution" in fondo nel train set
+-rimozione attributo "Id" dal test set
+-spostamento attributo "Category" in fondo nel train set
+-rimozione attributi "Descript" e "Resolution" dal train set
+
+Preprocessing:
+-Sostituzione attributo "Dates" con attributi "Season" e "Daily range"
+-(rimozione attributi "PdDistrict", "X", "Y")?
