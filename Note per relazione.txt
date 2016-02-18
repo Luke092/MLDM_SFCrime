@@ -1,0 +1,3 @@
+Modifiche iniziali:
+-eliminazione colonna "Id" dal test set
+-spostamento delle colonne "Category", "Descript" e "Resolution" in fondo nel train set
