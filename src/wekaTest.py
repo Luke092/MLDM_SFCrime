@@ -10,13 +10,19 @@ jvm.start(max_heap_size="3072m")
 
 loader = Loader(classname="weka.core.converters.ArffLoader")
 data = loader.load_file("./Dataset/trainSDR.arff")
-data.class_index = 0
+data.class_is_last()
 
-classifier = Classifier(classname="weka.classifiers.trees.J48", options=["-C", "0.3"])
+#classifier = Classifier(classname="weka.classifiers.trees.J48", options=["-C", "0.25", "-M", "2"])
+classifier = Classifier(classname="weka.classifiers.bayes.NaiveBayes")
 
 evaluation = Evaluation(data)
 #evaluation.crossvalidate_model(classifier, data, 10, Random(42))
 evaluation.evaluate_train_test_split(classifier, data, 66, Random(42))
-print evaluation.summary()
+res = evaluation.summary()
+res += "\n" + evaluation.matrix()
+f = open('./Dataset/resultsSDR.txt', 'w')
+f.write(res)
+
+print "OK"
 
 jvm.stop()
