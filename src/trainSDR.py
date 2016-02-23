@@ -28,17 +28,17 @@ for i in range(0,len(ds)):
         del(ds[i]['Dates'])
         new_ds.append(ds[i])
         
-i = 0	
-for el in intest:
-	if(el == "X"):
-		del(intest[i])
-	i = i + 1
+#i = 0	
+#for el in intest:
+#	if(el == "X"):
+#		del(intest[i])
+#	i = i + 1
 	
-i = 0	
-for el in intest:
-	if(el == "Y"):
-		del(intest[i])
-	i = i + 1
+#i = 0	
+#for el in intest:
+#	if(el == "Y"):
+#		del(intest[i])
+#	i = i + 1
 	
 #i = 0	
 #for el in intest:
@@ -46,4 +46,4 @@ for el in intest:
 #		del(intest[i])
 #	i = i + 1
         
-dsToCSV('./Dataset/trainSDR.csv',new_ds,intest)
+dsToCSV('./Dataset/train_prep.csv',new_ds,intest)
