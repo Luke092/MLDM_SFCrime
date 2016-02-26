@@ -23,7 +23,7 @@ def processSDR(ds, intest):
         new_ds.append(ds[i])
     return new_ds, intest
 
-def processGrid(ds, intest, gridSide, isTrain):
+def processGrid(ds, intest, gridSide):
     ds_new = []
 
     limit_X_min = -122.519703 #-122.511076
@@ -36,7 +36,6 @@ def processGrid(ds, intest, gridSide, isTrain):
     min_y = float(ds[0]['Y'])
     max_y = float(ds[0]['Y'])
 
-    count = 0
     for i in range(1,len(ds)):
         x = float(ds[i]['X'])
         y = float(ds[i]['Y'])
@@ -57,14 +56,12 @@ def processGrid(ds, intest, gridSide, isTrain):
             y_ok = True
 
         if not(x_ok) or not(y_ok):
-            count += 1
-            #ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
-            #ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
-            print str(count), get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
+##            ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
+##            ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
+             ds[i]['X'], ds[i]['Y'] = (limit_X_min + limit_X_max)/2.0, (limit_Y_min + limit_Y_max)/2.0
             
         ds_new.append(ds[i])
 
-    print str(count)
     step_x = (max_x - min_x)/gridSide
     step_y = (max_y - min_y)/gridSide
 

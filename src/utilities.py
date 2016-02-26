@@ -2,26 +2,34 @@ import csv
 import numpy as np
 import urllib
 import simplejson
+from omgeo import Geocoder
 
-def get_coordinates(query, from_sensor=False):
-    googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
-    query = query.encode('utf-8')
-    params = {
-        'address': query,
-        'sensor': "true" if from_sensor else "false"
-    }
-    url = googleGeocodeUrl + urllib.urlencode(params)
-    json_response = urllib.urlopen(url)
-    response = simplejson.loads(json_response.read())
-    if response['results']:
-        location = response['results'][0]['geometry']['location']
-        latitude, longitude = location['lat'], location['lng']
-        #print query, latitude, longitude
-    else:
-        latitude, longitude = None, None
-        #print query, "<no results>"
-    return longitude, latitude
-print get_coordinates('3RD ST / REVERE AV, SAN FRANCISCO')
+##def get_coordinates(query, from_sensor=False):
+##    googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
+##    query = query.encode('utf-8')
+##    params = {
+##        'address': query,
+##        'sensor': "true" if from_sensor else "false"
+##    }
+##    url = googleGeocodeUrl + urllib.urlencode(params)
+##    json_response = urllib.urlopen(url)
+##    response = simplejson.loads(json_response.read())
+##    if response['results']:
+##        location = response['results'][0]['geometry']['location']
+##        latitude, longitude = location['lat'], location['lng']
+##        #print query, latitude, longitude
+##    else:
+##        latitude, longitude = None, None
+##        #print query, "<no results>"
+##    return longitude, latitude
+##print get_coordinates('3RD ST / REVERE AV, SAN FRANCISCO')
+
+##def get_coordinates(query):
+##    g = Geocoder()
+##    result = g.geocode(query)
+##    return result
+##
+##print get_coordinates('2000 THOMAS AV, SAN FRANCISCO CA')
 
 def multiclass_log_loss(y_true, y_pred, eps=1e-15):
     """Multi class version of Logarithmic Loss metric.
@@ -87,7 +95,10 @@ def strToNum(ds, intest, ex):
         for row in ds:
                 for i in range(len(new_intest)):
                         if row[new_intest[i]] not in converters[i]:
-                                converters[i][row[new_intest[i]]] = len(converters[i])
+                            converters[i][row[new_intest[i]]] = len(converters[i])
+
+
+        count = 0
         for row in ds:
                 new_row = dict()
                 for i in range(len(intest)):
@@ -96,7 +107,20 @@ def strToNum(ds, intest, ex):
                         else:
                                 new_row[intest[i]] = row[intest[i]]
                 new_ds.append(new_row)
+                if count % 1000 == 0:
+                    print str(count)
+                count += 1
         return new_ds
+
+def getDictCategories(ds, numCategories):
+    dictCategories = dict()
+    i = 0
+    while len(dictCategories) < numCategories:
+        category = ds[i]['Category']
+        if category not in dictCategories.values():
+            dictCategories[len(dictCategories)] = category
+        i += 1
+    return dictCategories
 
 if (__name__ == "__main__"):
 	print "Error"
