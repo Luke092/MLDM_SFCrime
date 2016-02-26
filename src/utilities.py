@@ -1,4 +1,55 @@
 import csv
+import numpy as np
+import urllib
+import simplejson
+
+def get_coordinates(query, from_sensor=False):
+    googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
+    query = query.encode('utf-8')
+    params = {
+        'address': query,
+        'sensor': "true" if from_sensor else "false"
+    }
+    url = googleGeocodeUrl + urllib.urlencode(params)
+    json_response = urllib.urlopen(url)
+    response = simplejson.loads(json_response.read())
+    if response['results']:
+        location = response['results'][0]['geometry']['location']
+        latitude, longitude = location['lat'], location['lng']
+        #print query, latitude, longitude
+    else:
+        latitude, longitude = None, None
+        #print query, "<no results>"
+    return longitude, latitude
+print get_coordinates('3RD ST / REVERE AV, SAN FRANCISCO')
+
+def multiclass_log_loss(y_true, y_pred, eps=1e-15):
+    """Multi class version of Logarithmic Loss metric.
+    https://www.kaggle.com/wiki/MultiClassLogLoss
+
+    idea from this post:
+    http://www.kaggle.com/c/emc-data-science/forums/t/2149/is-anyone-noticing-difference-betwen-validation-and-leaderboard-error/12209#post12209
+
+    Parameters
+    ----------
+    y_true : array, shape = [n_samples]
+    y_pred : array, shape = [n_samples, n_classes]
+
+    Returns
+    -------
+    loss : float
+    """
+    y_true, y_pred = np.asarray(y_true), np.asarray(y_pred)
+    predictions = np.clip(y_pred, eps, 1 - eps)
+
+    # normalize row sums to 1
+    predictions /= predictions.sum(axis=1)[:, np.newaxis]
+
+    actual = np.zeros(y_pred.shape)
+    rows = actual.shape[0]
+    actual[np.arange(rows), y_true.astype(int)] = 1
+    vsota = np.sum(actual * np.log(predictions))
+    return -1.0 / rows * vsota
 
 def dsFromCSV(path):
 	ds = []
@@ -25,18 +76,27 @@ def dsToCSV(path, ds, intest):
 			sw.writerow(tmp);
 
 
-def strToNum(ds, intest):
-        converters = [dict()]*len(intest)
+def strToNum(ds, intest, ex):
+        converters = []
+        new_intest = intest
+        for att in ex:
+                new_intest.remove(att)
+        for i in range(len(new_intest)):
+                converters.append(dict())
         new_ds = []
         for row in ds:
-                for i in intest:
-                        if row[i] not in converters[i]:
-                                converters[i][row[i]] = len(converters[i])
+                for i in range(len(new_intest)):
+                        if row[new_intest[i]] not in converters[i]:
+                                converters[i][row[new_intest[i]]] = len(converters[i])
         for row in ds:
-                for i in intest:
-                        new_row[i] = converters[i][row[i]]
+                new_row = dict()
+                for i in range(len(intest)):
+                        if intest[i] not in ex:
+                                new_row[intest[i]] = converters[i][row[intest[i]]]
+                        else:
+                                new_row[intest[i]] = row[intest[i]]
                 new_ds.append(new_row)
-        
+        return new_ds
 
 if (__name__ == "__main__"):
 	print "Error"

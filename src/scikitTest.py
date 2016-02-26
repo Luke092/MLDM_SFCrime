@@ -15,7 +15,7 @@ ds = strToNum(ds, intest, ex)
 
 X = []
 Y = []
-ds = ds[0:450000]
+#ds = ds[0:450000]
 for row in ds:
         l_row = []
         for i in intest:
@@ -56,4 +56,4 @@ accuracy = accuracy_score(Y_test_set, Y_predict)
 print 'Accuracy: ' + str(accuracy)
 
 score = multiclass_log_loss(Y_test_set, prob)
-print str(score)
+print 'Score: ' + str(score)
