@@ -25,6 +25,18 @@ def dsToCSV(path, ds, intest):
 			sw.writerow(tmp);
 
 
+def strToNum(ds, intest):
+        converters = [dict()]*len(intest)
+        new_ds = []
+        for row in ds:
+                for i in intest:
+                        if row[i] not in converters[i]:
+                                converters[i][row[i]] = len(converters[i])
+        for row in ds:
+                for i in intest:
+                        new_row[i] = converters[i][row[i]]
+                new_ds.append(new_row)
+        
 
 if (__name__ == "__main__"):
 	print "Error"
