@@ -15,7 +15,7 @@ ds = strToNum(ds, intest, ex)
 
 X = []
 Y = []
-#ds = ds[0:450000]
+ds = ds[0:650000]
 for row in ds:
         l_row = []
         for i in intest:
@@ -29,13 +29,13 @@ limit = int(round(len(ds)*0.66))
 
 
 X_train_set = [X[i] for i in range(0,limit)]
-X_test_set = [X[i] for i in range(limit+1, len(ds))]
+X_test_set = [X[i] for i in range(limit, len(ds))]
 Y_train_set = [Y[i] for i in range(0,limit)]
-Y_test_set = [Y[i] for i in range(limit+1, len(ds))]
+Y_test_set = [Y[i] for i in range(limit, len(ds))]
 
 del ds
 
-clf = tree.DecisionTreeClassifier(criterion='entropy',min_samples_split=15)
+clf = tree.DecisionTreeClassifier(criterion='entropy',min_samples_split=2500)
 #clf = RandomForestClassifier(n_estimators=2,max_depth=5,min_samples_split=500)
 #clf = Perceptron()
 #clf = SGDClassifier()
@@ -46,6 +46,10 @@ clf = clf.fit(X_train_set,Y_train_set)
 Y_predict = clf.predict(X_test_set)
 prob = clf.predict_proba(X_test_set)
 
+del X_train_set
+del X_test_set
+del Y_train_set
+
 ##count = 0
 ##for i in range(len(prob)):
 ##      if prob[i][Y_test_set[i]] == 0:
@@ -54,6 +58,8 @@ prob = clf.predict_proba(X_test_set)
 
 accuracy = accuracy_score(Y_test_set, Y_predict)
 print 'Accuracy: ' + str(accuracy)
+
+##del Y_predict
 
 score = multiclass_log_loss(Y_test_set, prob)
 print 'Score: ' + str(score)

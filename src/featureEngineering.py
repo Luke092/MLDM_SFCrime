@@ -1,6 +1,8 @@
 from utilities import *
+import time
 
 def processSDR(ds, intest):
+    n = len(ds)
     new_ds = []
     intest.remove('Dates')
     intest.insert(0, 'Season')
@@ -21,6 +23,7 @@ def processSDR(ds, intest):
         ds[i]['DailyRange'] = daily_range
         del(ds[i]['Dates'])
         new_ds.append(ds[i])
+        printProgress(i,n)
     return new_ds, intest
 
 def processGrid(ds, intest, gridSide):
@@ -36,7 +39,9 @@ def processGrid(ds, intest, gridSide):
     min_y = float(ds[0]['Y'])
     max_y = float(ds[0]['Y'])
 
-    for i in range(1,len(ds)):
+    n = len(ds)
+
+    for i in range(n):
         x = float(ds[i]['X'])
         y = float(ds[i]['Y'])
         x_ok = False
@@ -56,11 +61,18 @@ def processGrid(ds, intest, gridSide):
             y_ok = True
 
         if not(x_ok) or not(y_ok):
-##            ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
-##            ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
-             ds[i]['X'], ds[i]['Y'] = (limit_X_min + limit_X_max)/2.0, (limit_Y_min + limit_Y_max)/2.0
+            if ds[i]['Address'] == 'FLORIDA ST / ALAMEDA ST':
+                ds[i]['Address'] = 'TREAT ST'
+            if ds[i]['Address'] == 'ARGUELLO BL / NORTHRIDGE DR':
+                ds[i]['Address'] = 'ARGUELLO BL'
+            ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
+            ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
+            time.sleep(0.2)
+##            print str(i), ds[i]['X'], ds[i]['Y']
+##             ds[i]['X'], ds[i]['Y'] = (limit_X_min + limit_X_max)/2.0, (limit_Y_min + limit_Y_max)/2.0
             
         ds_new.append(ds[i])
+        printProgress(i,n)
 
     step_x = (max_x - min_x)/gridSide
     step_y = (max_y - min_y)/gridSide
