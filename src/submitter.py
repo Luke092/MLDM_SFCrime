@@ -83,7 +83,7 @@ del Y_train
 print 'LOADING TEST SET'    
 test_set, test_intest = dsFromCSV('./Dataset/testGrid.csv')
 
-print 'CONVERTING TEST SET ATTS IN NUMERIC', len(test_set)
+print 'CONVERTING TEST SET ATTS IN NUMERIC'
 test_set = strToNum(test_set, test_intest, ex)
 
 for row in test_set:

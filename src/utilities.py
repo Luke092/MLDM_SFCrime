@@ -91,7 +91,8 @@ def dsToCSV(path, ds, intest, mode='wb'):
 	n = len(ds)
 	with open(path, mode) as csvfile:    
 		sw = csv.writer(csvfile, delimiter=",")
-		sw.writerow(intest)
+		if mode == 'wb':
+			sw.writerow(intest)
 		for row in ds:
 			tmp = []
 			for i in intest:
