@@ -1,5 +1,6 @@
 from utilities import *
 import time
+import re
 
 def processSDR(ds, intest):
     n = len(ds)
@@ -9,7 +10,7 @@ def processSDR(ds, intest):
     intest.insert(1, 'DailyRange')
     seasons = {0: 'winter', 1: 'spring', 2: 'summer', 3: 'autumn'}
     daily_ranges = {0: 'night', 1: 'morning', 2: 'afternoon', 3: 'evening'}
-    for i in range(0,len(ds)):
+    for i in range(n):
         date = ds[i]['Dates']
         splitted_date = date.split(' ')
         day,time = splitted_date[0].strip(), splitted_date[1].strip()
@@ -26,7 +27,7 @@ def processSDR(ds, intest):
         printProgress(i,n)
     return new_ds, intest
 
-def processGrid(ds, intest, gridSide):
+def processGrid(ds, gridSide):
     ds_new = []
 
     limit_X_min = -122.519703 #-122.511076
@@ -46,21 +47,21 @@ def processGrid(ds, intest, gridSide):
         y = float(ds[i]['Y'])
         x_ok = False
         y_ok = False
-        if (limit_X_min <= x <= limit_X_max):
+        if limit_X_min <= x <= limit_X_max:
             if x < min_x:
                 min_x = x
             if x > max_x:
                 max_x = x
             x_ok = True
             
-        if (limit_Y_min <= y <= limit_Y_max):
+        if limit_Y_min <= y <= limit_Y_max:
             if y < min_y:
                 min_y = y
             if y > max_y:
                 max_y = y
             y_ok = True
 
-        if not(x_ok) or not(y_ok):
+        if not x_ok or not y_ok:
             if ds[i]['Address'] == 'FLORIDA ST / ALAMEDA ST':
                 ds[i]['Address'] = 'TREAT ST'
             if ds[i]['Address'] == 'ARGUELLO BL / NORTHRIDGE DR':
@@ -81,3 +82,17 @@ def processGrid(ds, intest, gridSide):
         row['X'] = str(int((float(row['X']) - min_x)/step_x))
         row['Y'] = str(int((float(row['Y']) - min_y)/step_y))
     return ds_new
+
+def processCross(ds, intest):
+    n = len(ds)
+    intest.remove('Address')
+    intest.insert(4, 'isCross')
+    new_ds = []
+    for i in range(n):
+        address = ds[i]['Address']
+        isCross = re.search(' / ', address) is not None
+        del ds[i]['Address']
+        ds[i]['isCross'] = isCross
+        new_ds.append(ds[i])
+        printProgress(i,n)
+    return new_ds, intest

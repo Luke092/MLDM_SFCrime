@@ -10,17 +10,17 @@ GRIDSIDE = 200
 ##########################################################################
 
 ##print 'LOADING TRAIN SET'
-##train_set, train_intest = dsFromCSV('./Dataset/train.csv')
+##ds, train_intest = dsFromCSV('./Dataset/train.csv')
 ##print 'LOADING TEST SET'
 ##test_set, test_intest = dsFromCSV('./Dataset/test.csv')
 ##
 ##print 'PROCESSING SDR ON TRAIN SET'
-##train_set, train_intest = processSDR(train_set, train_intest)
+##ds, train_intest = processSDR(ds, train_intest)
 ##print 'PROCESSING SDR ON TEST SET'
 ##test_set, test_intest = processSDR(test_set, test_intest)
 ##
 ##print 'SAVING TRAIN SET'
-##dsToCSV('./Dataset/trainSDR.csv', train_set, train_intest)
+##dsToCSV('./Dataset/trainSDR.csv', ds, train_intest)
 ##print 'SAVING TEST SET'
 ##dsToCSV('./Dataset/testSDR.csv', test_set, test_intest)
 ##exit(0)
@@ -28,17 +28,17 @@ GRIDSIDE = 200
 ##########################################################################
 
 ##print 'LOADING TRAIN SET'
-##train_set, train_intest = dsFromCSV('./Dataset/trainSDR.csv')
+##ds, train_intest = dsFromCSV('./Dataset/trainSDR.csv')
 ##print 'LOADING TEST SET'
 ##test_set, test_intest = dsFromCSV('./Dataset/testSDR.csv')
 ##
 ##print 'PROCESSING GRID ON TRAIN SET'
-##train_set = processGrid(train_set, train_intest, GRIDSIDE)
+##ds = processGrid(ds, GRIDSIDE)
 ##print 'PROCESSING GRID ON TEST SET'
-##test_set = processGrid(test_set, test_intest, GRIDSIDE)
+##test_set = processGrid(test_set, GRIDSIDE)
 ##
 ##print 'SAVING TRAIN SET'
-##dsToCSV('./Dataset/trainGrid.csv', train_set, train_intest)
+##dsToCSV('./Dataset/trainGrid.csv', ds, train_intest)
 ##print 'SAVING TEST SET'
 ##dsToCSV('./Dataset/testGrid.csv', test_set, test_intest)
 ##exit(0)
@@ -46,21 +46,21 @@ GRIDSIDE = 200
 #########################################################################
 
 print 'LOADING TRAIN SET'
-train_set, train_intest = dsFromCSV('./Dataset/trainGrid.csv')
-dictCategories = getDictCategories(train_set, NUM_CATEGORIES)
+ds, train_intest = dsFromCSV('./Dataset/trainGrid.csv')
+dictCategories = getDictCategories(ds, NUM_CATEGORIES)
 cat = dictCategories.values()
 cat.sort()
 intest = ['Id']
 intest += cat
 ex = ['X', 'Y']
 print 'CONVERTING TRAIN SET ATTS IN NUMERIC'
-train_set = strToNum(train_set, train_intest, ex)
+ds = strToNum(ds, train_intest, ex)
 
 X_train = []
 Y_train = []
 X_test = []
 
-for row in train_set:
+for row in ds:
     l_row = []
     for i in train_intest:
         if(i != "Category"):
@@ -69,7 +69,7 @@ for row in train_set:
             Y_train.append(row[i])
     X_train.append(l_row)
 
-del train_set
+del ds
 
 #clf = tree.DecisionTreeClassifier(criterion='entropy',min_samples_split=500)
 clf = GaussianNB()
