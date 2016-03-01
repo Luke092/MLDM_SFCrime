@@ -6,6 +6,11 @@ from featureEngineering import *
 print "LOADING DATA SET"
 ds, intest = dsFromCSV('./Original_Dataset/train.csv')
 
+intest.remove("Descript")
+intest.remove("Resolution")
+intest.remove("Category")
+intest.append("Category")
+
 print "CORRETCTING OUTLIERS"
 ds = getCorrectCoordinates(ds)
 
