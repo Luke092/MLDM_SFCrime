@@ -2,6 +2,12 @@ from utilities import *
 import time
 import re
 
+# Global variables
+limit_X_min = -122.519703 #-122.511076
+limit_X_max = -122.268906 #-122.365671
+limit_Y_min = 37.684092 #37.707777
+limit_Y_max = 37.871601 #37.836333
+
 def processSDR(ds, intest):
     n = len(ds)
     new_ds = []
@@ -30,11 +36,6 @@ def processSDR(ds, intest):
 def processGrid(ds, gridSide):
     ds_new = []
 
-    limit_X_min = -122.519703 #-122.511076
-    limit_X_max = -122.268906 #-122.365671
-    limit_Y_min = 37.684092 #37.707777
-    limit_Y_max = 37.871601 #37.836333
-
     min_x = float(ds[0]['X'])
     max_x = float(ds[0]['X'])
     min_y = float(ds[0]['Y'])
@@ -52,26 +53,13 @@ def processGrid(ds, gridSide):
                 min_x = x
             if x > max_x:
                 max_x = x
-            x_ok = True
             
         if limit_Y_min <= y <= limit_Y_max:
             if y < min_y:
                 min_y = y
             if y > max_y:
                 max_y = y
-            y_ok = True
 
-        if not x_ok or not y_ok:
-            if ds[i]['Address'] == 'FLORIDA ST / ALAMEDA ST':
-                ds[i]['Address'] = 'TREAT ST'
-            if ds[i]['Address'] == 'ARGUELLO BL / NORTHRIDGE DR':
-                ds[i]['Address'] = 'ARGUELLO BL'
-            ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
-            ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
-            time.sleep(0.2)
-##            print str(i), ds[i]['X'], ds[i]['Y']
-##             ds[i]['X'], ds[i]['Y'] = (limit_X_min + limit_X_max)/2.0, (limit_Y_min + limit_Y_max)/2.0
-            
         ds_new.append(ds[i])
         printProgress(i,n)
 
@@ -96,3 +84,30 @@ def processCross(ds, intest):
         new_ds.append(ds[i])
         printProgress(i,n)
     return new_ds, intest
+    
+def getCorrectCoordinates(ds):
+
+	n = len(ds)
+
+	for i in range(n):
+		x = float(ds[i]['X'])
+		y = float(ds[i]['Y'])
+		x_ok = False
+		y_ok = False
+		if (limit_X_min <= x <= limit_X_max):
+			x_ok = True
+			
+		if (limit_Y_min <= y <= limit_Y_max):
+			y_ok = True
+
+		if not(x_ok) or not(y_ok):
+			if ds[i]['Address'] == 'FLORIDA ST / ALAMEDA ST':
+				ds[i]['Address'] = 'TREAT ST'
+			if ds[i]['Address'] == 'ARGUELLO BL / NORTHRIDGE DR':
+				ds[i]['Address'] = 'ARGUELLO BL'
+			ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
+			ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
+			time.sleep(0.2)
+		printProgress(i,n)
+			
+	return ds
