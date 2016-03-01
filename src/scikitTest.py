@@ -20,7 +20,6 @@ GRIDSIDE = 200
 
 #print 'SAVING DATA SET'
 #dsToCSV('./Dataset/trainSDR.csv', ds, intest)
-# exit(0)
 
 ##########################################################################
 
@@ -32,19 +31,17 @@ GRIDSIDE = 200
 
 #print 'SAVING DATA SET'
 #dsToCSV('./Dataset/trainGrid.csv', ds, intest)
-# exit(0)
 
 #########################################################################
 
 # print 'LOADING DATA SET'
 # ds, intest = dsFromCSV('./Dataset/trainGrid.csv')
-
+#
 # print 'PROCESSING CROSS ON DATA SET'
 # ds, intest = processCross(ds, intest)
 #
 # print 'SAVING DATA SET'
 # dsToCSV('./Dataset/trainCross.csv', ds, intest)
-# exit(0)
 
 #########################################################################
 
@@ -54,11 +51,9 @@ ds, intest = dsFromCSV('./Dataset/trainGrid.csv')
 ex = ['X', 'Y']
 print 'CONVERTING DATA SET ATTS IN NUMERIC'
 ds = strToNum(ds, intest, ex)
-#dsToCSV('./Dataset/trainNUM.csv', ds, intest)
 
 X = []
 Y = []
-ds = ds[0:450000]
 for row in ds:
         l_row = []
         for i in intest:
@@ -78,11 +73,11 @@ Y_test_set = [Y[i] for i in range(limit, len(ds))]
 
 del ds
 
-#clf = tree.DecisionTreeClassifier(criterion='entropy',min_samples_split=2500)
+clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=2500,max_depth=8)
 #clf = RandomForestClassifier(n_estimators=2,max_depth=5,min_samples_split=500)
 #clf = Perceptron()
 #clf = SGDClassifier()
-clf = GaussianNB()
+# clf = GaussianNB()
 
 clf = clf.fit(X_train_set,Y_train_set)
 

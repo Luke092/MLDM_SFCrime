@@ -2,7 +2,6 @@ import csv
 import numpy as np
 import urllib
 import simplejson
-from omgeo import Geocoder
 
 def get_coordinates(query, from_sensor=False):
 	googleGeocodeUrl = 'http://maps.googleapis.com/maps/api/geocode/json?'
@@ -22,12 +21,6 @@ def get_coordinates(query, from_sensor=False):
 		latitude, longitude = None, None
 		#print query, "<no results>"
 	return longitude, latitude
-##def get_coordinates(query):
-##    g = Geocoder()
-##    result = g.geocode(query)
-##    return result
-##
-##print get_coordinates('2000 THOMAS AV, SAN FRANCISCO CA')
 
 def multiclass_log_loss(y_true, y_pred, eps=1e-15):
 	"""Multi class version of Logarithmic Loss metric.
