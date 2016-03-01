@@ -67,8 +67,8 @@ def processGrid(ds, gridSide):
     step_y = (max_y - min_y)/gridSide
 
     for row in ds_new:
-        row['X'] = str(int((float(row['X']) - min_x)/step_x))
-        row['Y'] = str(int((float(row['Y']) - min_y)/step_y))
+        row['X'] = int((float(row['X']) - min_x)/step_x)
+        row['Y'] = int((float(row['Y']) - min_y)/step_y)
     return ds_new
 
 def processCross(ds, intest):

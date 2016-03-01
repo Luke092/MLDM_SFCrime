@@ -51,7 +51,7 @@ def main_prog(engineering):
 
     ex = ['X', 'Y']
     print 'CONVERTING DATA SET ATTS IN NUMERIC'
-    ds = strToNum(ds, intest, ex)
+    ds, _ = strToNum(ds, intest, ex)
 
     X = []
     Y = []
@@ -89,11 +89,11 @@ def main_prog(engineering):
     print "% train = " + str(float(len(X_train_set))/len(X))
     print "% test = " + str(float(len(X_test_set))/len(X))
 
-    clf = tree.DecisionTreeClassifier(criterion='gini', min_samples_split=2500, max_depth=8)
+    # clf = tree.DecisionTreeClassifier(criterion='gini', min_samples_split=80)
     # clf = RandomForestClassifier(n_estimators=2,max_depth=5,min_samples_split=500)
     # clf = Perceptron()
     # clf = SGDClassifier()
-    # clf = GaussianNB()
+    clf = GaussianNB()
 
     clf = clf.fit(X_train_set, Y_train_set)
 

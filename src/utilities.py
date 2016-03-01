@@ -66,17 +66,17 @@ def dsFromCSV(path):
 	csvfile = open(path, 'rb')
 	n = sum(1 for row in csvfile)
 	with open(path,'rb') as csvfile:
-                sr = csv.reader(csvfile, delimiter=",")
-                intest = next(sr)
-                for row in sr:
-                        i = 0
-                        tmp = {}
-                        for col in row:
-                                tmp[intest[i]] = col
-                                i = i + 1
-                        ds.append(tmp)
-                        j += 1
-                        printProgress(j,n)
+		sr = csv.reader(csvfile, delimiter=",")
+		intest = next(sr)
+		for row in sr:
+			i = 0
+			tmp = {}
+			for col in row:
+					tmp[intest[i]] = col
+					i = i + 1
+			ds.append(tmp)
+			j += 1
+			printProgress(j,n)
 	return ds, intest
 
 def dsToCSV(path, ds, intest, mode='wb'):
@@ -95,32 +95,34 @@ def dsToCSV(path, ds, intest, mode='wb'):
 			j += 1
 
 
-def strToNum(ds, intest, ex):
-        converters = []
-        new_intest = intest
-        for att in ex:
-                new_intest.remove(att)
-        for i in range(len(new_intest)):
-                converters.append(dict())
-        new_ds = []
-        for row in ds:
-                for i in range(len(new_intest)):
-                        if row[new_intest[i]] not in converters[i]:
-                                converters[i][row[new_intest[i]]] = len(converters[i])
-
-        n = len(ds)
-        j = 0
-        for row in ds:
-                new_row = dict()
-                for i in range(len(intest)):
-                        if intest[i] not in ex:
-                                new_row[intest[i]] = converters[i][row[intest[i]]]
-                        else:
-                                new_row[intest[i]] = row[intest[i]]
-                new_ds.append(new_row)
-                printProgress(j,n)
-                j += 1
-        return new_ds
+def strToNum(ds, intest, ex, converter = {}):
+	if len(converter) == 0:
+		new_intest = intest[:]
+		for att in ex:
+			new_intest.remove(att)
+		for att in new_intest:
+			converter[att] = dict()
+		for row in ds:
+			for att in new_intest:
+				if row[att] not in converter[att]:
+					converter[att][row[att]] = len(converter[att])
+	new_ds = []
+	n = len(ds)
+	j = 0
+	for row in ds:
+		new_row = dict()
+		for att in intest:
+			if att not in ex:
+				if row[att] in converter[att]:
+					new_row[att] = converter[att][row[att]]
+				else:
+					new_row[att] = len(converter[att])
+			else:
+				new_row[att] = row[att]
+		new_ds.append(new_row)
+		printProgress(j,n)
+		j += 1
+	return new_ds, converter
 
 def getDictCategories(ds, numCategories):
 	dictCategories = dict()

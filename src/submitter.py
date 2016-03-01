@@ -24,7 +24,7 @@ def main_prog(engineering):
 		test_set, test_intest = processSDR(test_set, test_intest)
 
 		# print 'SAVING TRAIN SET'
-		# dsToCSV('./Dataset/trainSDR.csv', ds, train_intest)
+		# dsToCSV('./Dataset/trainSDR.csv', train_set, train_intest)
 		# print 'SAVING TEST SET'
 		# dsToCSV('./Dataset/testSDR.csv', test_set, test_intest)
 
@@ -34,14 +34,14 @@ def main_prog(engineering):
 		# train_set, train_intest = dsFromCSV('./Dataset/trainSDR.csv')
 		# print 'LOADING TEST SET'
 		# test_set, test_intest = dsFromCSV('./Dataset/testSDR.csv')
-		#
+
 		print 'PROCESSING GRID ON TRAIN SET'
 		train_set = processGrid(train_set, GRIDSIDE)
 		print 'PROCESSING GRID ON TEST SET'
 		test_set = processGrid(test_set, GRIDSIDE)
-		#
+
 		# print 'SAVING TRAIN SET'
-		# dsToCSV('./Dataset/trainGrid.csv', ds, train_intest)
+		# dsToCSV('./Dataset/trainGrid.csv', train_set, train_intest)
 		# print 'SAVING TEST SET'
 		# dsToCSV('./Dataset/testGrid.csv', test_set, test_intest)
 
@@ -51,12 +51,12 @@ def main_prog(engineering):
 		# train_set, train_intest = dsFromCSV('./Dataset/trainGrid.csv')
 		# print 'LOADING TEST SET'
 		# test_set, test_intest = dsFromCSV('./Dataset/testGrid.csv')
-		#
+
 		print 'PROCESSING CROSS ON TRAIN SET'
 		train_set, train_intest = processCross(train_set, train_intest)
 		print 'PROCESSING CROSS ON TEST SET'
 		test_set, test_intest = processCross(test_set, test_intest)
-		#
+
 		# print 'SAVING TRAIN SET'
 		# dsToCSV('./Dataset/trainCross.csv', train_set, train_intest)
 		# print 'SAVING TEST SET'
@@ -65,7 +65,8 @@ def main_prog(engineering):
 	#########################################################################
 
 	# print 'LOADING TRAIN SET'
-	# train_set, train_intest = dsFromCSV('./Dataset/trainGrid.csv')
+	# train_set, train_intest = dsFromCSV('./Dataset/trainCross.csv')
+
 	dictCategories = getDictCategories(train_set, NUM_CATEGORIES)
 	cat = dictCategories.values()
 	cat.sort()
@@ -73,7 +74,7 @@ def main_prog(engineering):
 	intest += cat
 	ex = ['X', 'Y']
 	print 'CONVERTING TRAIN SET ATTS IN NUMERIC'
-	train_set = strToNum(train_set, train_intest, ex)
+	train_set, converter = strToNum(train_set, train_intest, ex)
 
 	X_train = []
 	Y_train = []
@@ -90,7 +91,7 @@ def main_prog(engineering):
 
 	del train_set
 
-	clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=2500,max_depth=8)
+	clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=80)
 	# clf = GaussianNB()
 
 	print 'FITTING MODEL'
@@ -99,11 +100,12 @@ def main_prog(engineering):
 	del X_train
 	del Y_train
 
-	#print 'LOADING TEST SET'    
-	#test_set, test_intest = dsFromCSV('./Dataset/testGrid.csv')
+##	print 'LOADING TEST SET'
+##	test_set, test_intest = dsFromCSV('./Dataset/testCross.csv')
 
 	print 'CONVERTING TEST SET ATTS IN NUMERIC'
-	test_set = strToNum(test_set, test_intest, ex)
+	ex.append('Id')
+	test_set, _ = strToNum(test_set, test_intest, ex, converter)
 
 	for row in test_set:
 		l_row = []
@@ -113,6 +115,7 @@ def main_prog(engineering):
 		X_test.append(l_row)
 
 	del test_set
+		
 	prob = clf.predict_proba(X_test[0:int(len(X_test)/8)])
 	submission = []
 	Id = 0
