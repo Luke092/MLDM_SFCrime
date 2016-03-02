@@ -2,6 +2,14 @@ from utilities import *
 import time
 import re
 
+def removeAtts(ds, intest, atts):
+    for att in atts:
+        intest.remove(att)
+    for i in range(len(ds)):
+        for att in atts:
+            del ds[i][att]
+    return ds, intest
+
 # Global variables
 limit_X_min = -122.519703 #-122.511076
 limit_X_max = -122.268906 #-122.365671

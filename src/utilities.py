@@ -82,7 +82,7 @@ def dsFromCSV(path):
 def dsToCSV(path, ds, intest, mode='wb'):
 	j = 0
 	n = len(ds)
-	with open(path, mode) as csvfile:    
+	with open(path, mode) as csvfile:
 		sw = csv.writer(csvfile, delimiter=",")
 		if mode == 'wb':
 			sw.writerow(intest)
@@ -98,8 +98,10 @@ def dsToCSV(path, ds, intest, mode='wb'):
 def strToNum(ds, intest, ex, converter = {}):
 	if len(converter) == 0:
 		new_intest = intest[:]
-		for att in ex:
-			new_intest.remove(att)
+		try:
+			for att in ex:
+				new_intest.remove(att)
+		except: None
 		for att in new_intest:
 			converter[att] = dict()
 		for row in ds:

@@ -9,24 +9,27 @@ NUM_CATEGORIES = 39
 GRIDSIDE = 200
 
 def main_prog(engineering):
-	
+
 	print 'LOADING TRAIN SET'
 	train_set, train_intest = dsFromCSV('./Dataset/train.csv')
+	toRemove = ['X','Y']
+	removeAtts(train_set, train_intest, toRemove)
 	print 'LOADING TEST SET'
 	test_set, test_intest = dsFromCSV('./Dataset/test.csv')
-	
+	removeAtts(test_set, test_intest, toRemove)
+
 	##########################################################################
 	if(int(engineering[0]) == 1):
-		
+
 		print 'PROCESSING SDR ON TRAIN SET'
 		train_set, train_intest = processSDR(train_set, train_intest)
 		print 'PROCESSING SDR ON TEST SET'
 		test_set, test_intest = processSDR(test_set, test_intest)
 
-		# print 'SAVING TRAIN SET'
-		# dsToCSV('./Dataset/trainSDR.csv', train_set, train_intest)
-		# print 'SAVING TEST SET'
-		# dsToCSV('./Dataset/testSDR.csv', test_set, test_intest)
+		print 'SAVING TRAIN SET'
+		dsToCSV('./Dataset/trainSDR.csv', train_set, train_intest)
+		print 'SAVING TEST SET'
+		dsToCSV('./Dataset/testSDR.csv', test_set, test_intest)
 
 	##########################################################################
 	if(int(engineering[1]) == 1):
@@ -40,10 +43,10 @@ def main_prog(engineering):
 		print 'PROCESSING GRID ON TEST SET'
 		test_set = processGrid(test_set, GRIDSIDE)
 
-		# print 'SAVING TRAIN SET'
-		# dsToCSV('./Dataset/trainGrid.csv', train_set, train_intest)
-		# print 'SAVING TEST SET'
-		# dsToCSV('./Dataset/testGrid.csv', test_set, test_intest)
+		print 'SAVING TRAIN SET'
+		dsToCSV('./Dataset/trainGrid.csv', train_set, train_intest)
+		print 'SAVING TEST SET'
+		dsToCSV('./Dataset/testGrid.csv', test_set, test_intest)
 
 	#########################################################################
 	if (int(engineering[2]) == 1):
@@ -57,10 +60,10 @@ def main_prog(engineering):
 		print 'PROCESSING CROSS ON TEST SET'
 		test_set, test_intest = processCross(test_set, test_intest)
 
-		# print 'SAVING TRAIN SET'
-		# dsToCSV('./Dataset/trainCross.csv', train_set, train_intest)
-		# print 'SAVING TEST SET'
-		# dsToCSV('./Dataset/testCross.csv', test_set, test_intest)
+		print 'SAVING TRAIN SET'
+		dsToCSV('./Dataset/trainCross.csv', train_set, train_intest)
+		print 'SAVING TEST SET'
+		dsToCSV('./Dataset/testCross.csv', test_set, test_intest)
 
 	#########################################################################
 
@@ -91,8 +94,8 @@ def main_prog(engineering):
 
 	del train_set
 
-	clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=80)
-	# clf = GaussianNB()
+	# clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=80)
+	clf = GaussianNB()
 
 	print 'FITTING MODEL'
 	clf = clf.fit(X_train,Y_train)
@@ -115,7 +118,7 @@ def main_prog(engineering):
 		X_test.append(l_row)
 
 	del test_set
-		
+
 	prob = clf.predict_proba(X_test[0:int(len(X_test)/8)])
 	submission = []
 	Id = 0
@@ -132,7 +135,7 @@ def main_prog(engineering):
 	del prob
 	del submission
 	del l_row
-		
+
 	limits = [int(i*len(X_test)/8) for i in range(1,9)]
 	for k in range(0,len(limits)-1):
 		submission = []
