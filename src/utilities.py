@@ -136,6 +136,38 @@ def getDictCategories(ds, numCategories):
 		i += 1
 	return dictCategories
 
+
+def saveSubmission(model, X_test, intest, dictCategories):
+	prob = model.predict_proba(X_test[0:int(len(X_test) / 8)])
+	submission = []
+	Id = 0
+	for row in prob:
+		l_row = {intest[0]: Id}
+		for i in range(0, len(row)):
+			l_row[dictCategories[i]] = prob[Id][i]
+		Id += 1
+		submission.append(l_row)
+
+	print 'SAVING SUBMISSION 1/8'
+	dsToCSV('./Dataset/submission.csv', submission, intest)
+
+	del prob
+	del submission
+	del l_row
+
+	limits = [int(i * len(X_test) / 8) for i in range(1, 9)]
+	for k in range(0, len(limits) - 1):
+		submission = []
+		prob = model.predict_proba(X_test[limits[k]:limits[k + 1]])
+		for row in prob:
+			l_row = {intest[0]: Id}
+			for i in range(0, len(row)):
+				l_row[dictCategories[i]] = prob[Id - limits[k]][i]
+			Id += 1
+			submission.append(l_row)
+		print 'SAVING SUBMISSION', str(k + 2) + '/8'
+		dsToCSV('./Dataset/submission.csv', submission, intest, 'ab')
+
 if (__name__ == "__main__"):
 	print "Error"
 	exit(1)
