@@ -20,8 +20,10 @@ def main_prog(engineering):
     intest = ['Id']
     intest += cat
 
-    toRemove = ['Address']
+    toRemove = ['PdDistrict']
     removeAtts(train_set, train_intest, toRemove)
+
+    train_set = address_to_type(train_set)
 
     ##########################################################################
     if (int(engineering[0]) == 1):

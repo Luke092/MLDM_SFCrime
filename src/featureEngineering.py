@@ -61,7 +61,7 @@ def processGrid(ds, gridSide):
                 min_x = x
             if x > max_x:
                 max_x = x
-            
+
         if limit_Y_min <= y <= limit_Y_max:
             if y < min_y:
                 min_y = y
@@ -92,7 +92,33 @@ def processCross(ds, intest):
         new_ds.append(ds[i])
         printProgress(i,n)
     return new_ds, intest
-    
+
+def address_to_type(ds):
+    if (ds[0]['Address'] == None):
+        return None
+
+    crosses = []
+
+    for row in ds:
+        cross = row['Address'].split("/")
+        if (len(cross) == 1):
+            t = row['Address'].strip()[-2:]
+            row['Address'] = t
+        elif(cross[0].strip()[-2:] == cross[1].strip()[-2:]):
+            row['Address'] = cross[0].strip()[-2:]
+        else:
+            t1 = cross[0].strip()[-2:]
+            t2 = cross[1].strip()[-2:]
+            if(t1 + "/" + t2 in crosses):
+                row['Address'] = t1 + "/" + t2
+            elif (t2 + "/" + t1 in crosses):
+                row['Address'] = t2 + "/" + t1
+            else:
+                row['Address'] = t1 + "/" + t2
+                crosses.append(row['Address'])
+
+    return ds
+
 def getCorrectCoordinates(ds):
 
 	n = len(ds)
@@ -104,7 +130,7 @@ def getCorrectCoordinates(ds):
 		y_ok = False
 		if (limit_X_min <= x <= limit_X_max):
 			x_ok = True
-			
+
 		if (limit_Y_min <= y <= limit_Y_max):
 			y_ok = True
 
@@ -117,5 +143,5 @@ def getCorrectCoordinates(ds):
 			ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
 			time.sleep(0.2)
 		printProgress(i,n)
-			
+
 	return ds
