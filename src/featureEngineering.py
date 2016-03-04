@@ -3,6 +3,8 @@ import time
 import re
 
 def removeAtts(ds, intest, atts):
+    if not atts:
+        return ds, intest
     for att in atts:
         intest.remove(att)
     for i in range(len(ds)):
@@ -89,6 +91,32 @@ def processCross(ds, intest):
         isCross = re.search(' / ', address) is not None
         del ds[i]['Address']
         ds[i]['isCross'] = isCross
+        new_ds.append(ds[i])
+        printProgress(i,n)
+    return new_ds, intest
+
+def processStreet(ds, intest):
+    n = len(ds)
+    intest.remove('Address')
+    intest.insert(4, 'StreetType')
+    new_ds = []
+    crosses = []
+    for i in range(n):
+        address = ds[i]['Address']
+        isCross = re.search(' / ', address) is not None
+        if not isCross:
+            streetType = address[-2:]
+        else:
+            streetTypes = re.split(' / ', address)
+            streetTypes = [s[-2:] for s in streetTypes]
+            streetType = ' / '.join(streetTypes)
+            streetTypeReversed = ' / '.join(reversed(streetTypes))
+            if not streetType in crosses and not streetTypeReversed in crosses:
+                crosses.append(streetType)
+            if streetTypeReversed in crosses:
+                streetType = streetTypeReversed
+        del ds[i]['Address']
+        ds[i]['StreetType'] = streetType
         new_ds.append(ds[i])
         printProgress(i,n)
     return new_ds, intest

@@ -3,11 +3,13 @@ from utilities import *
 from featureEngineering import *
 from sklearn.metrics import accuracy_score
 from sklearn import tree
-from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
+from sklearn.linear_model import LogisticRegression
+# from sknn.mlp import Classifier, Layer
 import numpy as np
 
 NUM_CATEGORIES = 39
-GRIDSIDE = 200
+GRIDSIDE = 10
 
 
 def main_prog(engineering):
@@ -48,10 +50,28 @@ def main_prog(engineering):
         dsToCSV('./Dataset/trainCross.csv', train_set, train_intest)
 
     #########################################################################
+    if (int(engineering[3]) == 1):
+        print 'PROCESSING STREET ON TRAIN SET'
+        train_set, train_intest = processStreet(train_set, train_intest)
+
+        print 'SAVING TRAIN SET'
+        dsToCSV('./Dataset/trainStreet.csv', train_set, train_intest)
+
+    #########################################################################
 
     ex = ['X', 'Y']
-    print 'CONVERTING TRAIN SET ATTS IN NUMERIC'
-    train_set, converter = strToNum(train_set, train_intest, ex)
+    # print 'CONVERTING TRAIN SET ATTS IN NUMERIC'
+    # train_set, converter = strToNum(train_set, train_intest, ex)
+
+    #########################################################################
+
+    # print 'CONVERTING TRAIN SET ATTS IN BINARY'
+    # train_set, train_intest = strToBin(train_set, train_intest, ex, dictCategories)
+
+    print 'SAVING TRAIN SET'
+    dsToCSV('./Dataset/trainBin.csv', train_set, train_intest)
+
+    #########################################################################
 
     X_train = []
     Y_train = []
@@ -83,6 +103,24 @@ def main_prog(engineering):
 
     # clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=80)
     clf = GaussianNB()
+    # clf = BernoulliNB()
+    # clf = MultinomialNB()
+    # clf = LogisticRegression(C=.01)
+    # clf = Classifier(
+    #     layers=[
+    #         Layer("Tanh", units=100),
+    #         Layer("Tanh", units=100),
+    #         Layer("Tanh", units=100),
+    #         Layer("Sigmoid", units=100),
+    #         Layer('Softmax')],
+    #     learning_rate=0.01,
+    #     learning_rule='momentum',
+    #     learning_momentum=0.9,
+    #     batch_size=100,
+    #     valid_size=0.01,
+    #     n_stable=20,
+    #     n_iter=200,
+    #     verbose=False)
 
     print 'FITTING MODEL'
     model = clf.fit(X_train_set, Y_train_set)
@@ -141,15 +179,36 @@ def main_prog(engineering):
         dsToCSV('./Dataset/testCross.csv', test_set, test_intest)
 
     #########################################################################
+    if (int(engineering[3]) == 1):
+        print 'PROCESSING STREET ON TEST SET'
+        test_set, test_intest = processStreet(test_set, test_intest)
+
+        print 'SAVING TEST SET'
+        dsToCSV('./Dataset/testStreet.csv', test_set, test_intest)
+
+    #########################################################################
+
     print 'FITTING MODEL'
     model = clf.fit(X_train, Y_train)
 
     del X_train
     del Y_train
 
-    print 'CONVERTING TEST SET ATTS IN NUMERIC'
+    ########################################################################
     ex.append('Id')
+
+    print 'CONVERTING TEST SET ATTS IN NUMERIC'
     test_set, _ = strToNum(test_set, test_intest, ex, converter)
+
+    ########################################################################
+
+    # print 'CONVERTING TEST SET ATTS IN BINARY'
+    # test_set, test_intest = strToBin(test_set, test_intest, ex)
+
+    # print 'SAVING TEST SET'
+    # dsToCSV('./Dataset/testBin.csv', test_set, test_intest)
+
+    ########################################################################
 
     for row in test_set:
         l_row = []
@@ -163,8 +222,8 @@ def main_prog(engineering):
     saveSubmission(model, X_test, intest, dictCategories)
 
 if (__name__ == "__main__"):
-    if (len(sys.argv) == 4):
+    if (len(sys.argv) > 1):
         engineering = sys.argv[1:]
         main_prog(engineering)
     else:
-        main_prog([1, 1, 1])
+        main_prog([1, 1, 1, 1])
