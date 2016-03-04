@@ -22,7 +22,7 @@ def main_prog(engineering):
     intest = ['Id']
     intest += cat
 
-    toRemove = ['PdDistrict']
+    toRemove = ['Address','PdDistrict']
     removeAtts(train_set, train_intest, toRemove)
 
     ##########################################################################
@@ -110,23 +110,25 @@ def main_prog(engineering):
     clf = Classifier(
         layers=[
             Layer("Tanh", units=100),
-            Layer("Tanh", units=100),
-            Layer("Tanh", units=100),
             Layer("Sigmoid", units=100),
             Layer('Softmax')],
-        learning_rate=0.01,
+        learning_rate=0.1,
         learning_rule='momentum',
         learning_momentum=0.9,
         batch_size=100,
         valid_size=0.01,
-        n_stable=20,
-        n_iter=200,
-        verbose=False)
+        n_stable=2,
+        n_iter=20,
+        verbose=True)
 
     print 'FITTING MODEL'
+    # model = clf.fit(X_train_set,Y_train_set)
+    # Y_predict = model.predict(X_test_set)
+    # prob = model.predict_proba(X_test_set)
+
     model = clf.fit(np.asarray(X_train_set), np.asanyarray(Y_train_set))
-    Y_predict = model.predict(X_test_set)
-    prob = model.predict_proba(X_test_set)
+    Y_predict = model.predict(np.asarray(X_test_set))
+    prob = model.predict_proba(np.asarray(X_test_set))
 
     del X_train_set
     del X_test_set
@@ -191,7 +193,8 @@ def main_prog(engineering):
     #########################################################################
 
     print 'FITTING MODEL'
-    model = clf.fit(X_train, Y_train)
+    # model = clf.fit(X_train, Y_train)
+    model = clf.fit(np.asarray(X_train), np.asanyarray(Y_train))
 
     del X_train
     del Y_train

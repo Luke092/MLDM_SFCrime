@@ -181,7 +181,8 @@ def getDictCategories(ds, numCategories):
 
 
 def saveSubmission(model, X_test, intest, dictCategories):
-    prob = model.predict_proba(X_test[0:int(len(X_test) / 8)])
+    # prob = model.predict_proba(X_test[0:int(len(X_test) / 8)])
+    prob = model.predict_proba(np.asanyarray(X_test[0:int(len(X_test) / 8)]))
     submission = []
     Id = 0
     for row in prob:
@@ -201,7 +202,8 @@ def saveSubmission(model, X_test, intest, dictCategories):
     limits = [int(i * len(X_test) / 8) for i in range(1, 9)]
     for k in range(0, len(limits) - 1):
         submission = []
-        prob = model.predict_proba(X_test[limits[k]:limits[k + 1]])
+        # prob = model.predict_proba(X_test[limits[k]:limits[k + 1]])
+        prob = model.predict_proba(np.asarray(X_test[limits[k]:limits[k + 1]]))
         for row in prob:
             l_row = {intest[0]: Id}
             for i in range(0, len(row)):
