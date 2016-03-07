@@ -2,6 +2,7 @@ from utilities import *
 import time
 import re
 
+
 def removeAtts(ds, intest, atts):
     if not atts:
         return ds, intest
@@ -12,11 +13,13 @@ def removeAtts(ds, intest, atts):
             del ds[i][att]
     return ds, intest
 
+
 # Global variables
-limit_X_min = -122.519703 #-122.511076
-limit_X_max = -122.268906 #-122.365671
-limit_Y_min = 37.684092 #37.707777
-limit_Y_max = 37.871601 #37.836333
+limit_X_min = -122.519703  # -122.511076
+limit_X_max = -122.268906  # -122.365671
+limit_Y_min = 37.684092  # 37.707777
+limit_Y_max = 37.871601  # 37.836333
+
 
 def processSDR(ds, intest):
     n = len(ds)
@@ -29,19 +32,20 @@ def processSDR(ds, intest):
     for i in range(n):
         date = ds[i]['Dates']
         splitted_date = date.split(' ')
-        day,time = splitted_date[0].strip(), splitted_date[1].strip()
+        day, time = splitted_date[0].strip(), splitted_date[1].strip()
         month = day.split('-')
         month = int(month[1])
         hour = time.split(':')
         hour = int(hour[0])
-        season = seasons[(month-1)/3]
-        daily_range = daily_ranges[hour/6]
+        season = seasons[(month - 1) / 3]
+        daily_range = daily_ranges[hour / 6]
         ds[i]['Season'] = season
         ds[i]['DailyRange'] = daily_range
-        del(ds[i]['Dates'])
+        del (ds[i]['Dates'])
         new_ds.append(ds[i])
-        printProgress(i,n)
+        printProgress(i, n)
     return new_ds, intest
+
 
 def processGrid(ds, gridSide):
     ds_new = []
@@ -71,15 +75,16 @@ def processGrid(ds, gridSide):
                 max_y = y
 
         ds_new.append(ds[i])
-        printProgress(i,n)
+        printProgress(i, n)
 
-    step_x = (max_x - min_x)/gridSide
-    step_y = (max_y - min_y)/gridSide
+    step_x = (max_x - min_x) / gridSide
+    step_y = (max_y - min_y) / gridSide
 
     for row in ds_new:
-        row['X'] = int((float(row['X']) - min_x)/step_x)
-        row['Y'] = int((float(row['Y']) - min_y)/step_y)
+        row['X'] = int((float(row['X']) - min_x) / step_x)
+        row['Y'] = int((float(row['Y']) - min_y) / step_y)
     return ds_new
+
 
 def processCross(ds, intest):
     n = len(ds)
@@ -92,8 +97,9 @@ def processCross(ds, intest):
         del ds[i]['Address']
         ds[i]['isCross'] = isCross
         new_ds.append(ds[i])
-        printProgress(i,n)
+        printProgress(i, n)
     return new_ds, intest
+
 
 def address_to_type(ds):
     if (ds[0]['Address'] == None):
@@ -106,12 +112,12 @@ def address_to_type(ds):
         if (len(cross) == 1):
             t = row['Address'].strip()[-2:]
             row['Address'] = t
-        elif(cross[0].strip()[-2:] == cross[1].strip()[-2:]):
+        elif (cross[0].strip()[-2:] == cross[1].strip()[-2:]):
             row['Address'] = cross[0].strip()[-2:]
         else:
             t1 = cross[0].strip()[-2:]
             t2 = cross[1].strip()[-2:]
-            if(t1 + "/" + t2 in crosses):
+            if (t1 + "/" + t2 in crosses):
                 row['Address'] = t1 + "/" + t2
             elif (t2 + "/" + t1 in crosses):
                 row['Address'] = t2 + "/" + t1
@@ -120,6 +126,7 @@ def address_to_type(ds):
                 crosses.append(row['Address'])
 
     return ds
+
 
 def processStreet(ds, intest):
     n = len(ds)
@@ -144,32 +151,47 @@ def processStreet(ds, intest):
         del ds[i]['Address']
         ds[i]['StreetType'] = streetType
         new_ds.append(ds[i])
-        printProgress(i,n)
+        printProgress(i, n)
     return new_ds, intest
 
+
+def processDay(ds, intest):
+    n = len(ds)
+    intest.remove('DayOfWeek')
+    intest.insert(3, 'Weekend')
+    for i in range(n):
+        day = ds[i]['DayOfWeek']
+        if day == 'Saturday' or day == 'Sunday':
+            ds[i]['Weekend'] = True
+        else:
+            ds[i]['Weekend'] = False
+        del ds[i]['DayOfWeek']
+        printProgress(i, n)
+    return ds, intest
+
+
 def getCorrectCoordinates(ds):
+    n = len(ds)
 
-	n = len(ds)
+    for i in range(n):
+        x = float(ds[i]['X'])
+        y = float(ds[i]['Y'])
+        x_ok = False
+        y_ok = False
+        if (limit_X_min <= x <= limit_X_max):
+            x_ok = True
 
-	for i in range(n):
-		x = float(ds[i]['X'])
-		y = float(ds[i]['Y'])
-		x_ok = False
-		y_ok = False
-		if (limit_X_min <= x <= limit_X_max):
-			x_ok = True
+        if (limit_Y_min <= y <= limit_Y_max):
+            y_ok = True
 
-		if (limit_Y_min <= y <= limit_Y_max):
-			y_ok = True
+        if not (x_ok) or not (y_ok):
+            if ds[i]['Address'] == 'FLORIDA ST / ALAMEDA ST':
+                ds[i]['Address'] = 'TREAT ST'
+            if ds[i]['Address'] == 'ARGUELLO BL / NORTHRIDGE DR':
+                ds[i]['Address'] = 'ARGUELLO BL'
+            ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
+            ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
+            time.sleep(0.2)
+        printProgress(i, n)
 
-		if not(x_ok) or not(y_ok):
-			if ds[i]['Address'] == 'FLORIDA ST / ALAMEDA ST':
-				ds[i]['Address'] = 'TREAT ST'
-			if ds[i]['Address'] == 'ARGUELLO BL / NORTHRIDGE DR':
-				ds[i]['Address'] = 'ARGUELLO BL'
-			ds[i]['X'], ds[i]['Y'] = get_coordinates(ds[i]['Address'] + ', SAN FRANCISCO')
-			ds[i]['X'], ds[i]['Y'] = str(ds[i]['X']), str(ds[i]['Y'])
-			time.sleep(0.2)
-		printProgress(i,n)
-
-	return ds
+    return ds

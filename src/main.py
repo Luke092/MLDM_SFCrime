@@ -3,13 +3,14 @@ from utilities import *
 from featureEngineering import *
 from sklearn.metrics import accuracy_score
 from sklearn import tree
+from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.linear_model import LogisticRegression
-from sknn.mlp import Classifier, Layer
+# from sknn.mlp import Classifier, Layer
 import numpy as np
 
 NUM_CATEGORIES = 39
-GRIDSIDE = 10
+GRIDSIDE = 50
 
 
 def main_prog(engineering):
@@ -22,7 +23,7 @@ def main_prog(engineering):
     intest = ['Id']
     intest += cat
 
-    toRemove = ['Address','PdDistrict']
+    toRemove = ['PdDistrict']
     removeAtts(train_set, train_intest, toRemove)
 
     ##########################################################################
@@ -102,25 +103,34 @@ def main_prog(engineering):
             X_train_set.append(X_train[i])
             Y_train_set.append(Y_train[i])
 
-    # clf = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=80)
-    # clf = GaussianNB()
-    # clf = BernoulliNB()
-    # clf = MultinomialNB()
-    # clf = LogisticRegression(C=.01)
-    clf = Classifier(
-        layers=[
-            Layer("Tanh", units=100),
-            Layer("Tanh", units=100),
-            Layer("Sigmoid", units=100),
-            Layer('Softmax')],
-        learning_rate=0.1,
-        learning_rule='momentum',
-        learning_momentum=0.9,
-        batch_size=100,
-        valid_size=0.01,
-        n_stable=2,
-        n_iter=20,
-        verbose=True)
+    clf1 = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=2500)
+    clf2 = GaussianNB()
+    clf3 = tree.DecisionTreeClassifier(criterion='gini',max_leaf_nodes=39)
+    # clf4 = BernoulliNB()
+    # clf5 = MultinomialNB()
+    # clf3 = LogisticRegression(C=.01)
+    # clf = RandomForestClassifier(n_jobs=-1, n_estimators=50,max_depth=16)
+    # clf = Classifier(
+    #     layers=[
+    #         Layer("Tanh", units=100),
+    #         Layer("Tanh", units=100),
+    #         Layer("Sigmoid", units=100),
+    #         Layer('Softmax')],
+    #     learning_rate=0.1,
+    #     learning_rule='momentum',
+    #     learning_momentum=0.9,
+    #     batch_size=100,
+    #     valid_size=0.01,
+    #     n_stable=2,
+    #     n_iter=20,
+    #     verbose=True)
+    clf = VotingClassifier(estimators=[('1',clf1),
+                                       ('2',clf2),
+                                       ('3',clf3),
+                                       # ('4',clf4),
+                                       # ('5',clf5)
+                                       ],
+                           voting='soft')
 
     print 'FITTING MODEL'
     # model = clf.fit(X_train_set,Y_train_set)
