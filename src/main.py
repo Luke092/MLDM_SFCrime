@@ -6,11 +6,11 @@ from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.linear_model import LogisticRegression
-# from sknn.mlp import Classifier, Layer
+from sknn.mlp import Classifier, Layer
 import numpy as np
 
 NUM_CATEGORIES = 39
-GRIDSIDE = 50
+GRIDSIDE = 10
 
 
 def main_prog(engineering):
@@ -23,7 +23,7 @@ def main_prog(engineering):
     intest = ['Id']
     intest += cat
 
-    toRemove = ['PdDistrict']
+    toRemove = []
     removeAtts(train_set, train_intest, toRemove)
 
     ##########################################################################
@@ -110,7 +110,7 @@ def main_prog(engineering):
     # clf5 = MultinomialNB()
     # clf3 = LogisticRegression(C=.01)
     # clf = RandomForestClassifier(n_jobs=-1, n_estimators=50,max_depth=16)
-    # clf = Classifier(
+    # clf4 = Classifier(
     #     layers=[
     #         Layer("Tanh", units=100),
     #         Layer("Tanh", units=100),
