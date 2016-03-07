@@ -182,7 +182,7 @@ def getDictCategories(ds, numCategories):
 
 def saveSubmission(model, X_test, intest, dictCategories):
     # prob = model.predict_proba(X_test[0:int(len(X_test) / 8)])
-    prob = model.predict_proba(np.asanyarray(X_test[0:int(len(X_test) / 8)]))
+    prob = model.predict_proba(np.asarray(X_test[0:int(len(X_test) / 8)]))
     submission = []
     Id = 0
     for row in prob:
