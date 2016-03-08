@@ -10,7 +10,9 @@ from sklearn.linear_model import LogisticRegression
 import numpy as np
 
 NUM_CATEGORIES = 39
-GRIDSIDE = 50
+GRIDSIDE = 22
+TO_REMOVE = []
+TO_PROCESS = 'YMDH'
 
 
 def main_prog(engineering):
@@ -22,9 +24,9 @@ def main_prog(engineering):
     cat.sort()
     intest = ['Id']
     intest += cat
+    ex=[]
 
-    toRemove = ['PdDistrict']
-    removeAtts(train_set, train_intest, toRemove)
+    removeAtts(train_set, train_intest, TO_REMOVE)
 
     ##########################################################################
     if (int(engineering[0]) == 1):
@@ -33,6 +35,13 @@ def main_prog(engineering):
 
         print 'SAVING TRAIN SET'
         dsToCSV('./Dataset/trainSDR.csv', train_set, train_intest)
+
+    elif (int(engineering[0]) == 2):
+        print 'PROCESSING DATE ON TRAIN SET'
+        train_set, train_intest, ex = processDate(train_set, train_intest, TO_PROCESS)
+
+        print 'SAVING TRAIN SET'
+        dsToCSV('./Dataset/trainDate.csv', train_set, train_intest)
 
     ##########################################################################
     if (int(engineering[1]) == 1):
@@ -50,8 +59,7 @@ def main_prog(engineering):
         print 'SAVING TRAIN SET'
         dsToCSV('./Dataset/trainCross.csv', train_set, train_intest)
 
-    #########################################################################
-    if (int(engineering[3]) == 1):
+    elif (int(engineering[2]) == 2):
         print 'PROCESSING STREET ON TRAIN SET'
         # train_set, train_intest = processStreet(train_set, train_intest)
         train_set = address_to_type(train_set)
@@ -60,8 +68,16 @@ def main_prog(engineering):
         dsToCSV('./Dataset/trainStreet.csv', train_set, train_intest)
 
     #########################################################################
+    if (int(engineering[3]) == 1):
+        print 'PROCESSING DAY ON TRAIN SET'
+        train_set, train_intest = processDay(train_set, train_intest)
 
-    ex = ['X', 'Y']
+        print 'SAVING TRAIN SET'
+        dsToCSV('./Dataset/trainDay.csv', train_set, train_intest)
+
+    #########################################################################
+
+    ex += ['X', 'Y']
     print 'CONVERTING TRAIN SET ATTS IN NUMERIC'
     train_set, converter = strToNum(train_set, train_intest, ex)
 
@@ -105,14 +121,14 @@ def main_prog(engineering):
 
     clf1 = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=2500)
     clf2 = GaussianNB()
-    clf3 = tree.DecisionTreeClassifier(criterion='gini',max_leaf_nodes=39)
+    clf3 = tree.DecisionTreeClassifier(criterion='gini',min_samples_leaf=39)
+    # clf4 = tree.DecisionTreeClassifier(criterion='gini',max_leaf_nodes=39)
     # clf4 = BernoulliNB()
     # clf5 = MultinomialNB()
-    # clf3 = LogisticRegression(C=.01)
+    # clf = LogisticRegression(C=.01)
     # clf = RandomForestClassifier(n_jobs=-1, n_estimators=50,max_depth=16)
     # clf = Classifier(
     #     layers=[
-    #         Layer("Tanh", units=100),
     #         Layer("Tanh", units=100),
     #         Layer("Sigmoid", units=100),
     #         Layer('Softmax')],
@@ -130,14 +146,16 @@ def main_prog(engineering):
                                        # ('4',clf4),
                                        # ('5',clf5)
                                        ],
-                           voting='soft')
+                           voting='soft',
+                           # weights=[5,2,4]
+                           )
 
     print 'FITTING MODEL'
     # model = clf.fit(X_train_set,Y_train_set)
     # Y_predict = model.predict(X_test_set)
     # prob = model.predict_proba(X_test_set)
 
-    model = clf.fit(np.asarray(X_train_set), np.asarray(Y_train_set))
+    model = clf.fit(np.asarray(X_train_set), np.asanyarray(Y_train_set))
     Y_predict = model.predict(np.asarray(X_test_set))
     prob = model.predict_proba(np.asarray(X_test_set))
 
@@ -166,7 +184,7 @@ def main_prog(engineering):
 
     print 'LOADING TEST SET'
     test_set, test_intest = dsFromCSV('./Dataset/test.csv')
-    removeAtts(test_set, test_intest, toRemove)
+    removeAtts(test_set, test_intest, TO_REMOVE)
 
     ##########################################################################
     if (int(engineering[0]) == 1):
@@ -175,6 +193,13 @@ def main_prog(engineering):
 
         print 'SAVING TEST SET'
         dsToCSV('./Dataset/testSDR.csv', test_set, test_intest)
+
+    elif (int(engineering[0]) == 2):
+        print 'PROCESSING DATE ON TEST SET'
+        test_set, test_intest, _ = processDate(test_set, test_intest, TO_PROCESS)
+
+        print 'SAVING TEST SET'
+        dsToCSV('./Dataset/testDate.csv', test_set, test_intest)
 
     ##########################################################################
     if (int(engineering[1]) == 1):
@@ -192,20 +217,27 @@ def main_prog(engineering):
         print 'SAVING TEST SET'
         dsToCSV('./Dataset/testCross.csv', test_set, test_intest)
 
-    #########################################################################
-    if (int(engineering[3]) == 1):
+    elif (int(engineering[2]) == 2):
         print 'PROCESSING STREET ON TEST SET'
         # test_set, test_intest = processStreet(test_set, test_intest)
-        train_set = address_to_type(train_set)
+        test_set = address_to_type(test_set)
 
         print 'SAVING TEST SET'
         dsToCSV('./Dataset/testStreet.csv', test_set, test_intest)
 
     #########################################################################
+    if (int(engineering[3]) == 1):
+        print 'PROCESSING DAY ON TEST SET'
+        test_set, test_intest = processDay(test_set, test_intest)
+
+        print 'SAVING TEST SET'
+        dsToCSV('./Dataset/testDay.csv', test_set, test_intest)
+
+    #########################################################################
 
     print 'FITTING MODEL'
     # model = clf.fit(X_train, Y_train)
-    model = clf.fit(np.asarray(X_train), np.asarray(Y_train))
+    model = clf.fit(np.asarray(X_train), np.asanyarray(Y_train))
 
     del X_train
     del Y_train

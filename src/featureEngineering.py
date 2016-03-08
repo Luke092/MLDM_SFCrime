@@ -169,6 +169,32 @@ def processDay(ds, intest):
         printProgress(i, n)
     return ds, intest
 
+def processDate(ds, intest, toProcess='YMDH'):
+    if not toProcess:
+        return ds, intest
+    n = len(ds)
+    processable = {'Y':'Year', 'M': 'Month', 'D': 'DayOfMonth', 'H': 'Hour'}
+    intest.remove('Dates')
+    ex = []
+    pos = 0
+    for key, value in processable.iteritems():
+        if key in toProcess:
+            intest.insert(pos,value)
+            ex.append(value)
+            pos += 1
+    for i in range(n):
+        date = ds[i]['Dates']
+        splitted_date = date.split(' ')
+        day, time = splitted_date[0].strip(), splitted_date[1].strip()
+        day = day.split('-')
+        time = time.split(':')
+        processed = {'Y': day[0], 'M': day[1], 'D': day[2], 'H': time[0]}
+        for key, value in processable.iteritems():
+            if key in toProcess:
+                ds[i][value] = int(processed[key])
+        del (ds[i]['Dates'])
+        printProgress(i, n)
+    return ds, intest, ex
 
 def getCorrectCoordinates(ds):
     n = len(ds)
