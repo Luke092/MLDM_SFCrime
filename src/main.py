@@ -230,7 +230,7 @@ def main_prog(engineering):
 
     # Remove attributes
 
-    removeAtts(train_set, train_intest, TO_REMOVE)
+    removeAtts(test_set, test_intest, TO_REMOVE)
 
     #########################################################################
 
@@ -244,6 +244,7 @@ def main_prog(engineering):
     ########################################################################
     ex.append('Id')
 
+    ex += ['X', 'Y']
     print 'CONVERTING TEST SET ATTS IN NUMERIC'
     test_set, _ = strToNum(test_set, test_intest, ex, converter)
 
