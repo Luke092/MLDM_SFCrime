@@ -63,7 +63,7 @@ def main_prog(engineering):
         train_set, train_intest = sdr_process(train_set,train_intest)
 
     elif (int(engineering[0]) == 2):
-        train_set, train_intest, ex = date_process(train_intest,train_intest)
+        train_set, train_intest, ex = date_process(train_set,train_intest)
 
     elif (int(engineering[0]) == 3):
         train_set, train_intest = sdr_process(train_set, train_intest)
@@ -71,7 +71,6 @@ def main_prog(engineering):
 
     ##########################################################################
     if (int(engineering[1]) == 1):
-        print 'PROCESSING GRID ON TRAIN SET'
         train_set = grid_process(train_set)
 
     #########################################################################
