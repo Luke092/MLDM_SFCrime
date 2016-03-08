@@ -24,7 +24,7 @@ limit_Y_max = 37.871601  # 37.836333
 def processSDR(ds, intest):
     n = len(ds)
     new_ds = []
-    intest.remove('Dates')
+    # intest.remove('Dates')
     intest.insert(0, 'Season')
     intest.insert(1, 'DailyRange')
     seasons = {0: 'winter', 1: 'spring', 2: 'summer', 3: 'autumn'}
@@ -41,7 +41,7 @@ def processSDR(ds, intest):
         daily_range = daily_ranges[hour / 6]
         ds[i]['Season'] = season
         ds[i]['DailyRange'] = daily_range
-        del (ds[i]['Dates'])
+        # del (ds[i]['Dates'])
         new_ds.append(ds[i])
         printProgress(i, n)
     return new_ds, intest
@@ -174,7 +174,7 @@ def processDate(ds, intest, toProcess='YMDH'):
         return ds, intest
     n = len(ds)
     processable = {'Y':'Year', 'M': 'Month', 'D': 'DayOfMonth', 'H': 'Hour'}
-    intest.remove('Dates')
+    # intest.remove('Dates')
     ex = []
     pos = 0
     for key, value in processable.iteritems():
@@ -192,7 +192,7 @@ def processDate(ds, intest, toProcess='YMDH'):
         for key, value in processable.iteritems():
             if key in toProcess:
                 ds[i][value] = int(processed[key])
-        del (ds[i]['Dates'])
+        # del (ds[i]['Dates'])
         printProgress(i, n)
     return ds, intest, ex
 

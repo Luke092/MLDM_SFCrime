@@ -10,9 +10,41 @@ from sknn.mlp import Classifier, Layer
 import numpy as np
 
 NUM_CATEGORIES = 39
-GRIDSIDE = 22
-TO_REMOVE = []
+GRIDSIDE = 100
+TO_REMOVE = ['Dates']
 TO_PROCESS = 'YMDH'
+
+def sdr_process(ds,intest):
+    print 'PROCESSING SDR ON TRAIN SET'
+    d_set, d_intest = processSDR(ds, intest)
+    return d_set, d_intest
+
+def date_process(ds,intest):
+    print 'PROCESSING DATE ON TRAIN SET'
+    d_set, d_intest, ex = processDate(ds, intest, TO_PROCESS)
+    return d_set, d_intest, ex
+
+def grid_process(ds):
+    print 'PROCESSING GRID ON TRAIN SET'
+    d_set = processGrid(ds, GRIDSIDE)
+    return d_set
+
+def cross_process(ds, intest):
+    print 'PROCESSING CROSS ON TRAIN SET'
+    d_set, d_intest = processCross(ds, intest)
+    return d_set, d_intest
+
+def street_process(ds):
+    print 'PROCESSING STREET ON TRAIN SET'
+    d_set = address_to_type(ds)
+    return d_set
+
+def day_process(ds, intest):
+    print 'PROCESSING DAY ON TRAIN SET'
+    d_set, d_intest = processDay(ds, intest)
+    return d_set, d_intest
+
+
 
 
 def main_prog(engineering):
@@ -26,54 +58,38 @@ def main_prog(engineering):
     intest += cat
     ex=[]
 
-    removeAtts(train_set, train_intest, TO_REMOVE)
-
     ##########################################################################
     if (int(engineering[0]) == 1):
-        print 'PROCESSING SDR ON TRAIN SET'
-        train_set, train_intest = processSDR(train_set, train_intest)
-
-        print 'SAVING TRAIN SET'
-        dsToCSV('./Dataset/trainSDR.csv', train_set, train_intest)
+        train_set, train_intest = sdr_process(train_set,train_intest)
 
     elif (int(engineering[0]) == 2):
-        print 'PROCESSING DATE ON TRAIN SET'
-        train_set, train_intest, ex = processDate(train_set, train_intest, TO_PROCESS)
+        train_set, train_intest, ex = date_process(train_intest,train_intest)
 
-        print 'SAVING TRAIN SET'
-        dsToCSV('./Dataset/trainDate.csv', train_set, train_intest)
+    elif (int(engineering[0]) == 3):
+        train_set, train_intest = sdr_process(train_set, train_intest)
+        train_set, train_intest, ex = date_process(train_set, train_intest)
 
     ##########################################################################
     if (int(engineering[1]) == 1):
         print 'PROCESSING GRID ON TRAIN SET'
-        train_set = processGrid(train_set, GRIDSIDE)
-
-        print 'SAVING TRAIN SET'
-        dsToCSV('./Dataset/trainGrid.csv', train_set, train_intest)
+        train_set = grid_process(train_set)
 
     #########################################################################
     if (int(engineering[2]) == 1):
-        print 'PROCESSING CROSS ON TRAIN SET'
-        train_set, train_intest = processCross(train_set, train_intest)
-
-        print 'SAVING TRAIN SET'
-        dsToCSV('./Dataset/trainCross.csv', train_set, train_intest)
+        train_set, train_intest = cross_process(train_set, train_intest)
 
     elif (int(engineering[2]) == 2):
-        print 'PROCESSING STREET ON TRAIN SET'
-        # train_set, train_intest = processStreet(train_set, train_intest)
         train_set = address_to_type(train_set)
-
-        print 'SAVING TRAIN SET'
-        dsToCSV('./Dataset/trainStreet.csv', train_set, train_intest)
 
     #########################################################################
     if (int(engineering[3]) == 1):
-        print 'PROCESSING DAY ON TRAIN SET'
-        train_set, train_intest = processDay(train_set, train_intest)
+        train_set, train_intest = date_process(train_set, train_intest)
 
-        print 'SAVING TRAIN SET'
-        dsToCSV('./Dataset/trainDay.csv', train_set, train_intest)
+    #########################################################################
+
+    # Remove attributes
+
+    removeAtts(train_set, train_intest, TO_REMOVE)
 
     #########################################################################
 
@@ -184,54 +200,38 @@ def main_prog(engineering):
 
     print 'LOADING TEST SET'
     test_set, test_intest = dsFromCSV('./Dataset/test.csv')
-    removeAtts(test_set, test_intest, TO_REMOVE)
 
-    ##########################################################################
+       ##########################################################################
     if (int(engineering[0]) == 1):
-        print 'PROCESSING SDR ON TEST SET'
-        test_set, test_intest = processSDR(test_set, test_intest)
-
-        print 'SAVING TEST SET'
-        dsToCSV('./Dataset/testSDR.csv', test_set, test_intest)
+        test_set, test_intest = sdr_process(test_set,test_intest)
 
     elif (int(engineering[0]) == 2):
-        print 'PROCESSING DATE ON TEST SET'
-        test_set, test_intest, _ = processDate(test_set, test_intest, TO_PROCESS)
+        test_set, test_intest, ex = date_process(test_set,test_intest)
 
-        print 'SAVING TEST SET'
-        dsToCSV('./Dataset/testDate.csv', test_set, test_intest)
+    elif (int(engineering[0]) == 3):
+        test_set, test_intest = sdr_process(test_set, test_intest)
+        test_set, test_intest, ex = date_process(test_set, test_intest)
 
     ##########################################################################
     if (int(engineering[1]) == 1):
-        print 'PROCESSING GRID ON TEST SET'
-        test_set = processGrid(test_set, GRIDSIDE)
-
-        print 'SAVING TEST SET'
-        dsToCSV('./Dataset/testGrid.csv', test_set, test_intest)
+        test_set = grid_process(test_set)
 
     #########################################################################
     if (int(engineering[2]) == 1):
-        print 'PROCESSING CROSS ON TEST SET'
-        test_set, test_intest = processCross(test_set, test_intest)
-
-        print 'SAVING TEST SET'
-        dsToCSV('./Dataset/testCross.csv', test_set, test_intest)
+        test_set, test_intest = cross_process(test_set, test_intest)
 
     elif (int(engineering[2]) == 2):
-        print 'PROCESSING STREET ON TEST SET'
-        # test_set, test_intest = processStreet(test_set, test_intest)
         test_set = address_to_type(test_set)
-
-        print 'SAVING TEST SET'
-        dsToCSV('./Dataset/testStreet.csv', test_set, test_intest)
 
     #########################################################################
     if (int(engineering[3]) == 1):
-        print 'PROCESSING DAY ON TEST SET'
-        test_set, test_intest = processDay(test_set, test_intest)
+        test_set, test_intest = date_process(test_set, test_intest)
 
-        print 'SAVING TEST SET'
-        dsToCSV('./Dataset/testDay.csv', test_set, test_intest)
+    #########################################################################
+
+    # Remove attributes
+
+    removeAtts(train_set, train_intest, TO_REMOVE)
 
     #########################################################################
 
