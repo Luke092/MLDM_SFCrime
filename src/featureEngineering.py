@@ -221,3 +221,38 @@ def getCorrectCoordinates(ds):
         printProgress(i, n)
 
     return ds
+
+def coordinate_normalization(save_on_file = False):
+    print '\nCoordinate normalization'
+    sets = ['train','test']
+    result = []
+    for dset in sets:
+        df = pd.read_csv('./Dataset/' + dset + '.csv')
+        min_max_scaler = preprocessing.MinMaxScaler()
+        X_norm = min_max_scaler.fit_transform(df.X)
+        Y_norm = min_max_scaler.fit_transform(df.Y)
+        df_norm = pd.DataFrame({'X' : X_norm, 'Y' : Y_norm})
+        result.append(df_norm)
+        if save_on_file:
+            print 'Saving on file'+'./Dataset/'+dset+'_XYnorm.csv'
+            df_norm.to_csv(path_or_buf='./Dataset/' + dset + '_XYnorm.csv', sep=',', na_rep='', float_format=None, columns=None, header=True, index=False, index_label=None, mode='w', encoding=None, compression=None, quoting=None, quotechar='"', line_terminator='\n', chunksize=None, tupleize_cols=False, date_format=None, doublequote=True, escapechar=None, decimal='.')
+    print 'Done'
+    return result
+
+def coordinate_quantization(side):
+    sets = ['train','test']
+    normalized = coordinate_normalization()
+    index = 0
+    print '\nCoordinate quantization'
+    for dset in sets:
+        df_X, df_Y = pd.DataFrame({'X': normalized[index].X}), pd.DataFrame({'Y': normalized[index].Y})
+        print 'creating ','./Dataset/' + dset + '_XYquant_' + str(side) + '.csv'
+        X_quant = KMeans(n_clusters=side, random_state=0).fit_predict(df_X.as_matrix())
+        print 'ended X coordinate'
+        Y_quant = KMeans(n_clusters=side, random_state=0).fit_predict(df_Y.as_matrix())
+        print 'ended Y coordinate'
+        print 'Saving on file: ./Dataset/'+dset+'_XYquant_'+str(side)+'.csv'
+        pd.DataFrame({'X' : X_quant, 'Y' : Y_quant}).to_csv(path_or_buf='./Dataset/' + dset + '_XYquant_' + str(side) + '.csv', sep=',', na_rep='', float_format=None, columns=None, header=True, index=False, index_label=None, mode='w', encoding=None, compression=None, quoting=None, quotechar='"', line_terminator='\n', chunksize=None, tupleize_cols=False, date_format=None, doublequote=True, escapechar=None, decimal='.')
+        index += 1
+    print 'Done'
+
