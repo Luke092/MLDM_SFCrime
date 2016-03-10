@@ -162,7 +162,7 @@ def main_prog(engineering):
                                        # ('5',clf5)
                                        ],
                            voting='soft',
-                           # weights=[5,2,4]
+                           weights=[5,2,6]
                            )
 
     print 'FITTING MODEL'
