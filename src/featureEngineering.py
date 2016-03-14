@@ -5,6 +5,7 @@ from sklearn import preprocessing
 import pandas as pd
 import time
 import re
+import os
 
 
 def removeAtts(ds, intest, atts):
@@ -52,42 +53,15 @@ def processSDR(ds, intest):
 
 
 def processGrid(ds, gridSide):
-    ds_new = []
-
-    min_x = float(ds[0]['X'])
-    max_x = float(ds[0]['X'])
-    min_y = float(ds[0]['Y'])
-    max_y = float(ds[0]['Y'])
-
-    n = len(ds)
-
-    for i in range(n):
-        x = float(ds[i]['X'])
-        y = float(ds[i]['Y'])
-        x_ok = False
-        y_ok = False
-        if limit_X_min <= x <= limit_X_max:
-            if x < min_x:
-                min_x = x
-            if x > max_x:
-                max_x = x
-
-        if limit_Y_min <= y <= limit_Y_max:
-            if y < min_y:
-                min_y = y
-            if y > max_y:
-                max_y = y
-
-        ds_new.append(ds[i])
-        printProgress(i, n)
+    min_x, max_x, min_y, max_y = getMinMax()
 
     step_x = (max_x - min_x) / gridSide
     step_y = (max_y - min_y) / gridSide
 
-    for row in ds_new:
+    for row in ds:
         row['X'] = int((float(row['X']) - min_x) / step_x)
         row['Y'] = int((float(row['Y']) - min_y) / step_y)
-    return ds_new
+    return ds
 
 
 def processCross(ds, intest):
@@ -260,3 +234,65 @@ def coordinate_quantization(side):
         index += 1
     print 'Done'
 
+
+# def ProcessQuantization(ds, intest, side, train=1):
+#     if train == 1:
+#         path = './Dataset/train' + '_XYquant_' + str(side) + '.csv'
+#         if not os.path.exists(path):
+#             coordinate_quantization(side)
+#         XYQuant, _ = dsFromCSV(path)
+#     if train == 0:
+#         path = './Dataset/test' + '_XYquant_' + str(side) + '.csv'
+#         if not os.path.exists(path):
+#             coordinate_quantization(side)
+#         XYQuant, _ = dsFromCSV(path)
+#
+#     for row in XYQuant:
+#
+#     return ds, intest
+
+def getMinMax():
+    ds_train, intest = dsFromCSV("./Dataset/train.csv")
+    ds_test, intest_test = dsFromCSV("./Dataset/test.csv")
+    min_x = float(ds_train[0]['X'])
+    max_x = float(ds_train[0]['X'])
+    min_y = float(ds_train[0]['Y'])
+    max_y = float(ds_train[0]['Y'])
+
+    n = len(ds_train) + len(ds_test)
+
+    for i in range(len(ds_train)):
+        x = float(ds_train[i]['X'])
+        y = float(ds_train[i]['Y'])
+        if limit_X_min <= x <= limit_X_max:
+            if x < min_x:
+                min_x = x
+            if x > max_x:
+                max_x = x
+
+        if limit_Y_min <= y <= limit_Y_max:
+            if y < min_y:
+                min_y = y
+            if y > max_y:
+                max_y = y
+
+        printProgress(i, n)
+
+    for i in range(len(ds_test)):
+        x = float(ds_test[i]['X'])
+        y = float(ds_test[i]['Y'])
+        if limit_X_min <= x <= limit_X_max:
+            if x < min_x:
+                min_x = x
+            if x > max_x:
+                max_x = x
+
+        if limit_Y_min <= y <= limit_Y_max:
+            if y < min_y:
+                min_y = y
+            if y > max_y:
+                max_y = y
+
+        printProgress(i+len(ds_train), n)
+
+    return min_x, max_x, min_y, max_y
