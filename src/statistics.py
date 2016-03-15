@@ -22,6 +22,7 @@ for k in colors.keys():
 
 seasons = {'summer':{}, 'winter':{}, 'spring':{}, 'autumn':{}}
 hour = {'morning':{}, 'afternoon':{}, 'evening':{}, 'night':{}}
+year = {}
 
 total = len(ds)
 
@@ -39,6 +40,15 @@ for row in ds_train:
         hour[row['DailyRange']][cat] = 1
     else:
         hour[row['DailyRange']][cat] += 1
+    y = row['Year']
+    if y not in year:
+        year[y] = {}
+        year[y][cat] = 1
+    else:
+        if cat not in year[y]:
+            year[y][cat] = 1
+        else:
+            year[y][cat] += 1
 
 cat = category.keys()
 rate = category.values()
@@ -97,5 +107,26 @@ for h in hour:
     # plt.yticks(n,seasons[s].keys())
 
     i +=1
+
+plt.show()
+
+i = 1
+j = 1
+for y in year:
+    plt.figure(i)
+    plt.subplot(2,2,j)
+    plt.title(y)
+    n = np.arange(len(year[y].keys()))
+    barlist = plt.barh(n,year[y].values())
+    k = 0
+    for bar in barlist:
+        bar.set_color(colors.values()[k])
+        k += 1
+
+    if j%4 == 0:
+        j = 1
+        i += 1
+    else:
+        j += 1
 
 plt.show()
