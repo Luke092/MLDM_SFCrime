@@ -6,13 +6,13 @@ from sklearn import tree
 from sklearn.ensemble import RandomForestClassifier, VotingClassifier
 from sklearn.naive_bayes import GaussianNB, BernoulliNB, MultinomialNB
 from sklearn.linear_model import LogisticRegression
-from sknn.mlp import Classifier, Layer
+# from sknn.mlp import Classifier, Layer
 import numpy as np
 
 NUM_CATEGORIES = 39
 GRIDSIDE = 100
 TO_REMOVE = ['Dates']
-TO_PROCESS = 'YMDH'
+TO_PROCESS = 'YMH'
 
 def sdr_process(ds,intest):
     print 'PROCESSING SDR ON TRAIN SET'
@@ -82,7 +82,7 @@ def main_prog(engineering):
 
     #########################################################################
     if (int(engineering[3]) == 1):
-        train_set, train_intest = date_process(train_set, train_intest)
+        train_set, train_intest = day_process(train_set, train_intest)
 
     #########################################################################
 
@@ -136,8 +136,8 @@ def main_prog(engineering):
 
     clf1 = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=2500)
     clf2 = GaussianNB()
-    clf3 = tree.DecisionTreeClassifier(criterion='gini',min_samples_leaf=39)
-    # clf4 = tree.DecisionTreeClassifier(criterion='gini',max_leaf_nodes=39)
+    clf3 = tree.DecisionTreeClassifier(criterion='entropy',min_samples_leaf=39)
+    # clf4 = tree.DecisionTreeClassifier(criterion='gini',max_depth=4)
     # clf4 = BernoulliNB()
     # clf5 = MultinomialNB()
     # clf = LogisticRegression(C=.01)
@@ -162,7 +162,7 @@ def main_prog(engineering):
                                        # ('5',clf5)
                                        ],
                            voting='soft',
-                           weights=[5,2,6]
+                           weights=[5,6,4]
                            )
 
     print 'FITTING MODEL'
@@ -224,7 +224,7 @@ def main_prog(engineering):
 
     #########################################################################
     if (int(engineering[3]) == 1):
-        test_set, test_intest = date_process(test_set, test_intest)
+        test_set, test_intest = day_process(test_set, test_intest)
 
     #########################################################################
 
