@@ -12,7 +12,7 @@ import numpy as np
 NUM_CATEGORIES = 39
 GRIDSIDE = 100
 TO_REMOVE = ['Dates']
-TO_PROCESS = 'YMH'
+TO_PROCESS = 'YMHm'
 
 def sdr_process(ds,intest):
     print 'PROCESSING SDR ON TRAIN SET'
@@ -80,6 +80,10 @@ def main_prog(engineering):
     elif (int(engineering[2]) == 2):
         train_set = address_to_type(train_set)
 
+    elif (int(engineering[2]) == 3):
+        train_set, train_intest = cross_process(train_set, train_intest)
+        train_set = address_to_type(train_set)
+
     #########################################################################
     if (int(engineering[3]) == 1):
         train_set, train_intest = day_process(train_set, train_intest)
@@ -134,10 +138,10 @@ def main_prog(engineering):
             X_train_set.append(X_train[i])
             Y_train_set.append(Y_train[i])
 
-    clf1 = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=2500)
+    clf1 = tree.DecisionTreeClassifier(criterion='gini',min_samples_split=250)
     clf2 = GaussianNB()
     clf3 = tree.DecisionTreeClassifier(criterion='entropy',min_samples_leaf=39)
-    # clf4 = tree.DecisionTreeClassifier(criterion='gini',max_depth=4)
+    clf4 = tree.DecisionTreeClassifier(criterion='gini',max_depth=4)
     # clf4 = BernoulliNB()
     # clf5 = MultinomialNB()
     # clf = LogisticRegression(C=.01)
@@ -158,11 +162,11 @@ def main_prog(engineering):
     clf = VotingClassifier(estimators=[('1',clf1),
                                        ('2',clf2),
                                        ('3',clf3),
-                                       # ('4',clf4),
+                                       ('4',clf4),
                                        # ('5',clf5)
                                        ],
                            voting='soft',
-                           weights=[5,6,4]
+                           weights=[5,2,4,1]
                            )
 
     print 'FITTING MODEL'
@@ -220,6 +224,10 @@ def main_prog(engineering):
         test_set, test_intest = cross_process(test_set, test_intest)
 
     elif (int(engineering[2]) == 2):
+        test_set = address_to_type(test_set)
+
+    elif (int(engineering[2]) == 3):
+        test_set, test_intest = cross_process(test_set, test_intest)
         test_set = address_to_type(test_set)
 
     #########################################################################
