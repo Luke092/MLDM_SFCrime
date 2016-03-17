@@ -29,9 +29,8 @@ limit_Y_max = 37.871601  # 37.836333
 def processSDR(ds, intest):
     n = len(ds)
     new_ds = []
-    # intest.remove('Dates')
-    intest.insert(0, 'Season')
-    intest.insert(1, 'DailyRange')
+    intest.insert(1, 'Season')
+    intest.insert(2, 'DailyRange')
     seasons = {0: 'winter', 1: 'spring', 2: 'summer', 3: 'autumn'}
     daily_ranges = {0: 'night', 1: 'morning', 2: 'afternoon', 3: 'evening'}
     for i in range(n):
@@ -46,7 +45,6 @@ def processSDR(ds, intest):
         daily_range = daily_ranges[hour / 6]
         ds[i]['Season'] = season
         ds[i]['DailyRange'] = daily_range
-        # del (ds[i]['Dates'])
         new_ds.append(ds[i])
         printProgress(i, n)
     return new_ds, intest
@@ -66,13 +64,11 @@ def processGrid(ds, gridSide):
 
 def processCross(ds, intest):
     n = len(ds)
-    intest.remove('Address')
     intest.insert(4, 'isCross')
     new_ds = []
     for i in range(n):
         address = ds[i]['Address']
         isCross = re.search(' / ', address) is not None
-        del ds[i]['Address']
         ds[i]['isCross'] = isCross
         new_ds.append(ds[i])
         printProgress(i, n)
@@ -108,7 +104,6 @@ def address_to_type(ds):
 
 def processStreet(ds, intest):
     n = len(ds)
-    intest.remove('Address')
     intest.insert(4, 'StreetType')
     new_ds = []
     crosses = []
@@ -126,7 +121,6 @@ def processStreet(ds, intest):
                 crosses.append(streetType)
             if streetTypeReversed in crosses:
                 streetType = streetTypeReversed
-        del ds[i]['Address']
         ds[i]['StreetType'] = streetType
         new_ds.append(ds[i])
         printProgress(i, n)
@@ -135,7 +129,6 @@ def processStreet(ds, intest):
 
 def processDay(ds, intest):
     n = len(ds)
-    intest.remove('DayOfWeek')
     intest.insert(3, 'Weekend')
     for i in range(n):
         day = ds[i]['DayOfWeek']
@@ -143,16 +136,14 @@ def processDay(ds, intest):
             ds[i]['Weekend'] = True
         else:
             ds[i]['Weekend'] = False
-        del ds[i]['DayOfWeek']
         printProgress(i, n)
     return ds, intest
 
-def processDate(ds, intest, toProcess='YMDH'):
+def processDate(ds, intest, toProcess='YMDHm'):
     if not toProcess:
         return ds, intest
     n = len(ds)
-    processable = {'Y':'Year', 'M': 'Month', 'D': 'DayOfMonth', 'H': 'Hour'}
-    # intest.remove('Dates')
+    processable = {'Y':'Year', 'M': 'Month', 'D': 'DayOfMonth', 'H': 'Hour', 'm': 'Minute'}
     ex = []
     pos = 0
     for key, value in processable.iteritems():
@@ -166,11 +157,10 @@ def processDate(ds, intest, toProcess='YMDH'):
         day, time = splitted_date[0].strip(), splitted_date[1].strip()
         day = day.split('-')
         time = time.split(':')
-        processed = {'Y': day[0], 'M': day[1], 'D': day[2], 'H': time[0]}
+        processed = {'Y': day[0], 'M': day[1], 'D': day[2], 'H': time[0], 'm': time[1]}
         for key, value in processable.iteritems():
             if key in toProcess:
                 ds[i][value] = int(processed[key])
-        # del (ds[i]['Dates'])
         printProgress(i, n)
     return ds, intest, ex
 
