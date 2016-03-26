@@ -1,9 +1,10 @@
-Un altro attributo che secondo noi andava profondamente rielaborato è
+Attributo Address
+Un altro attributo che secondo noi andava rielaborato è
 quello che descrive testualmente il luogo di avvenimento del crimine, ovvero
 l'indirizzo. Riportiamo per comodità un esempio estratto dal dataset in Figura X.X.
 Come si può notare dalla Figura X.X i valori assunti da questo attributo sono molto specifici
 per il crimine in quanto rappresentano il nome di una via con il relativo numero del blocco di appartenenza;
-nel caso di un incrocio tra due strade, il valore assunto comprende i nomi, separati da "/" delle vie con il 
+nel caso di un incrocio tra due strade, il valore assunto comprende i nomi, separati da "/", delle vie con il 
 relativo numero del blocco di appartenenza. Inoltre grazie a Weka è stato possibile osservare come il 
 numero di valori distinti nel training set per questo attributo è 23.228, decisamente troppo elevato
 per applicare un criterio di splitting delle istanze. Abbiamo dunque pensato di elaborare l'attributo
