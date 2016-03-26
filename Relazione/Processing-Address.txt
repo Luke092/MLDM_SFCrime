@@ -1,0 +1,34 @@
+Un altro attributo che secondo noi andava profondamente rielaborato è
+quello che descrive testualmente il luogo di avvenimento del crimine, ovvero
+l'indirizzo. Riportiamo per comodità un esempio estratto dal dataset in Figura X.X.
+Come si può notare dalla Figura X.X i valori assunti da questo attributo sono molto specifici
+per il crimine in quanto rappresentano il nome di una via con il relativo numero del blocco di appartenenza;
+nel caso di un incrocio tra due strade, il valore assunto comprende i nomi, separati da "/" delle vie con il 
+relativo numero del blocco di appartenenza. Inoltre grazie a Weka è stato possibile osservare come il 
+numero di valori distinti nel training set per questo attributo è 23.228, decisamente troppo elevato
+per applicare un criterio di splitting delle istanze. Abbiamo dunque pensato di elaborare l'attributo
+Address, creando nuovi attributi più generici che portassero maggiori informazioni in fase di addestramento.
+I seguenti paragrafi mostrano le soluzioni da noi adoperate.
+
+1) Creazione dell'attributo isCross
+La prima soluzione è stata quella di ridurre drasticamente il numero di possibili valori per l'indirizzo,
+creando il nuovo attributo isCross, che rappresenta un valore booleano secondo la seguente semplice regola:
+	. Yes: corrisponde ad un incrocio tra due strade;
+	. No: corrisponde ad una sola strada.
+Come si può intuire il numero di possibili valori per l'indirizzo è stato ridotto a 2, numero di gran
+lunga inferiore rispetto a quello iniziale.
+In figura X.X riportiamo come esempio la trasformazione degli indirizzi di Figura X.X.
+
+2) Creazione dell'attributo streetType
+La seconda soluzione è invece stata quella di creare l'attributo streetType che rappresentasse il tipo
+di strada in cui è avvenuto il crimine (informazione ricavabile dalle due lettere finali dell'indirizzo).
+I valori assunti da questo nuovo attributo seguono seguono il seguente schema:
+	. se l'indirizzo non è un incrocio: il valore assunto è il tipo di strada descritto nell'indirizzo;
+	. se l'indirizzo è un incrocio tra due strade dello stesso tipo: il valore assunto è il tipo delle strade dell'incrocio;
+	. se l'indirizzo è un incrocio tra due strade di diverso tipo: il valore assunto è rappresentato dai tipi delle due strade separati da "/"
+Adoperando questa convenzione il numero di possibili valori per l'indirizzo è stato ridotto a 98, numero di gran 
+lunga inferiore rispetto a quello iniziale.
+Chiaramente i valori usati per rappresentare incroci tra strade di diverso tipo devono essere indipendenti dall'ordine
+in cui le strade stesse compaiono nell'incrocio perciò ad esempio un incrocio tra una Street ed una Avenue è equivalente all'incrocio 
+tra una Avenue ed una Street.
+Per una maggiore chiarezza riportiamo come esempio la trasformazione degli indirizzi di Figura X.X.
