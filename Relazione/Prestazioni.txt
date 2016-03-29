@@ -1,0 +1,37 @@
+Capitolo 3 - Algoritmi e prestazioni
+
+3.1 - Nota introduttiva
+Poiché la maggior parte degli algoritmi di machine learning messi a disposizione dalle librerie di Python funzionava solo su attributi numerici,
+è stato necessario convertire i valori degli attributi categorici in valori numerici, mantenendo comunque allineate le rispettive conversioni
+tra training set e test set.
+
+3.2 - Modalità di valutazione dei risultati
+Secondo il regolamento previsto dalla competizione di Kaggle, ad essere valutato era un file csv che presentasse:
+	- un'intestazione, contenente la parola "Id" e i nomi di tutte le categorie di crimini in ordine alfabetico;
+	- una sequenza di valori rappresentanti l'id dell'istanza, seguita dalle probabilità di appartenenza alle suddette categorie di crimine,
+		predette dal modello relativamente al test set fornitoci.
+Riportiamo in Figura X.X un esempio di file da sottomettere.
+
+Ogni partecipante poteva sottomettere al massimo 5 prove al giorno, che venivano valutate usando la metrica cosiddetta "multi-class logarithmic loss".
+Premesso che ogni crimine era etichettato con una sola vera categoria, questa metrica di valutazione considerava le probabilità predette di tutte le istanze
+per ogni categoria fornite nel file csv, secondo la seguente formula:
+			FORMULA MULTICLASS LOGLOSS
+dove N è il numero di istanza del test set, M è il numero di classi (categorie di crimine), log è il logaritmo naturale, yij vale 1 se l'istanza i
+appartiene alla categoria j e vale 0 altrimenti, e pij è la probabilità predetta che l'istanza i appartenza alla categoria j.
+Prima di sottomettere una prova abbiamo suddiviso il training set in due parti: i 2/3 delle istanze è stata usata per addestrare il modello e il rimanente
+1/3 è stato usato per predire le probabilità. In questo modo abbiamo potuto calcolare il valore della metrica di valutazione sulle probabilità predette
+per avere un'idea generale dell'esito della sottomissione.
+
+Nei seguenti paragrafi verranno illustrati gli algoritmi utilizzati per addestrare i modelli e predire le probabilità richieste.
+
+3.3 - Gaussian Naive Bayes
+
+Il primo algoritmo che abbiamo utilizzato è stato il Gaussian Naive Bayes, una particolare implementazione del Naive Bayes che assume una distribuzione
+di probabilità gaussiana delle istanze rispetto alla classe. La scelta è stata effettuata sulla base di molteplici fattori, quali la semplicità, l'efficienza
+computazionale, l'ingente quantità di dati e l'obiettivo della competizione, ovvero il calcolo di probabilità.
+Sfruttando i vari tipi di preprocessing illustrati nel capitolo precedente, sono state fatte diverse prove: la migliore è stata effettuata rimuovendo
+gli attributi Address e PdDistrict, scomponendo l'attributo Dates in Season e DailyRange ed elaborando le coordinate X e Y in una griglia 10x10.
+Riportiamo di seguito i risultati ottenuti:
+	- Accuracy: 0,20843
+	- Score: 2,64736
+	- Classifica: 859/1387
