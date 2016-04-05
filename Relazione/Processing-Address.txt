@@ -23,7 +23,7 @@ In figura X.X riportiamo come esempio la trasformazione degli indirizzi di Figur
 2) Creazione dell'attributo streetType
 La seconda soluzione è invece stata quella di creare l'attributo streetType che rappresentasse il tipo
 di strada in cui è avvenuto il crimine (informazione ricavabile dalle due lettere finali dell'indirizzo).
-I valori assunti da questo nuovo attributo seguono seguono il seguente schema:
+I valori assunti da questo nuovo attributo seguono il seguente schema:
 	. se l'indirizzo non è un incrocio: il valore assunto è il tipo di strada descritto nell'indirizzo;
 	. se l'indirizzo è un incrocio tra due strade dello stesso tipo: il valore assunto è il tipo delle strade dell'incrocio;
 	. se l'indirizzo è un incrocio tra due strade di diverso tipo: il valore assunto è rappresentato dai tipi delle due strade separati da "/"
@@ -33,3 +33,8 @@ Chiaramente i valori usati per rappresentare incroci tra strade di diverso tipo 
 in cui le strade stesse compaiono nell'incrocio perciò ad esempio un incrocio tra una Street ed una Avenue è equivalente all'incrocio 
 tra una Avenue ed una Street.
 Per una maggiore chiarezza riportiamo come esempio la trasformazione degli indirizzi di Figura X.X.
+
+3) Riduzione dell'attributo Address
+Un ulteriore tentativo di ridurre il numero di valori possibili per l'attributo Address è stato quello di mantenere solo il nome della via,
+rimuovendo l'eventuale numero civico. L'idea era quella di raggruppare i crimini in base alla via in cui sono stati commessi.
+In figura X.X riportiamo come esempio la riduzione degli indirizzi di Figura X.X.

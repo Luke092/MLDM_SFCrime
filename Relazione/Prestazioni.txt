@@ -95,7 +95,7 @@ I risultati ottenuti sono i seguenti:
 	- Classifica: 281/1457
 Infine l'ultima prova è stata effettuata scomponendo l'attributo Dates sia in Season e DailyRange che in Year, Month, Hour e Minute, elaborando le coordinate X e Y
 in una griglia 100x100 e aggiungendo gli attributi Weekend e isCross, senza rimuovere i relativi attributi DayOfWeek e Address. I modelli partecipanti
-alla votazione sono gli stessi della prova precedente.
+alla votazione sono gli stessi della prova precedente, ad eccezione del primo albero di decisione, costruito con il parametro min_samples_split pari a 250.
 I risultati ottenuti da questa ultima prova sono i seguenti:
 	- Accuracy: 0.30239
 	- Score: 2.35771
